@@ -16,9 +16,11 @@ export default {
     show_footer: function(bool) {
       this.footer_show = bool;
     }
-  }
+  } // 导入需要的子组件(分类,购物车,个人中心)
 };
 </script>
-
+<style >
+@import "./assets/iconfont/iconfont.css";
+</style>
 <style>
 </style>
