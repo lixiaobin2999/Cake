@@ -6,7 +6,6 @@ import Classify from './views/Classify'
 import Cart from './views/Cart'
 import Own from './views/Own'
 import Login from './views/Login'
-import Test from './views/test'
 
 Vue.use(Router)
 
@@ -41,9 +40,5 @@ export default new Router({
       path: '/Login',
       component: Login
     },
-    {
-      path: '/test',
-      component: Test
-    }
   ]
 })

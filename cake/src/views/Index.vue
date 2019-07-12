@@ -5,38 +5,111 @@
         <!-- 首页 -->
         <mt-tab-container-item id="myIndex">
           <div style="text-align: center;;width:100%">
+            <h1 style="margin:10px auto">首页</h1>
             <!-- 搜索 -->
             <div class="mySearch">
               <mt-search autofocus></mt-search>
             </div>
             <!-- 产品导航 -->
             <div class="product-nav">
-              <router-link to="#" class="list-nav">
-                <span class="iconfont">&#xe6be;</span>
-              </router-link>
-              <router-link to="#" class="list-nav">
-                <span class="iconfont">&#xe666;</span>
-              </router-link>
-              <router-link to="#" class="list-nav">
-                <span class="iconfont">&#xe613;</span>
-              </router-link>
-              <router-link to="#" class="list-nav">
-                <span class="iconfont">&#xe601;</span>
-              </router-link>
+              <div class="list-nav" @click="detail">
+                <i class="iconfont">&#xe6be;</i>
+                <span class="list-menu">蛋糕</span>
+              </div>
+              <div class="list-nav" @click="detail">
+                <i class="iconfont">&#xe666;</i>
+                <span class="list-menu">甜点</span>
+              </div>
+              <div class="list-nav" @click="detail">
+                <i class="iconfont">&#xe613;</i>
+                <span class="list-menu">小食</span>
+              </div>
+              <div class="list-nav" @click="detail">
+                <i class="iconfont">&#xe601;</i>
+                <span class="list-menu">礼盒</span>
+              </div>
             </div>
             <!-- 推荐 -->
             <router-link to="#">
-              <img src="images/banner/yan01.jpg" width="95%" />
+              <img src="images/banner/yan01.jpg" />
             </router-link>
             <!-- 公告 -->
             <div class="gonggao">
               <p class="iconfont">
                 <span class="up">
-                  <i class="laba"></i>
+                  <i class="iconfont">&#xe61a;</i>
                 </span>
-                <span class="slide">店铺营业时间为：8:30-18:00,对每一份甜点心怀敬意,为保证最佳赏味,请提前预约制作。</span>
+                <span to="#" class="slide">
+                  <i>店铺营业时间为：8:30-18:00,对每一份甜点心怀敬意,为保证最佳赏味,请提前预约制作。</i>
+                </span>
               </p>
             </div>
+            <mt-swipe :auto="3000" :defaultIndex="0" :show-indicators="true">
+              <mt-swipe-item>
+                <router-link to="#">
+                  <img src="images/banner/yan02.jpg" alt />
+                </router-link>
+              </mt-swipe-item>
+              <mt-swipe-item>
+                <router-link to="#">
+                  <img src="images/banner/yan03.jpg" alt />
+                </router-link>
+              </mt-swipe-item>
+              <mt-swipe-item>
+                <router-link to="#">
+                  <img src="images/banner/yan04.jpg" alt />
+                </router-link>
+              </mt-swipe-item>
+              <mt-swipe-item>
+                <router-link to="#">
+                  <img src="images/banner/yan05.jpg" alt />
+                </router-link>
+              </mt-swipe-item>
+              <mt-swipe-item>
+                <router-link to="#">
+                  <img src="images/banner/yan06.jpg" alt />
+                </router-link>
+              </mt-swipe-item>
+            </mt-swipe>
+            <!-- 小食 -->
+            <div class="snack-list clearfix">
+              <span class="snack-title">小食</span>
+              <router-link to="###" class="product-more">更多</router-link>
+            </div>
+            <div class="snack-list clearfix">
+              <router-link to="###" class="snack-item">
+                <img src="images/banner/yan01.jpg" alt />
+                <span class="title">最美我焰</span>
+                <span class="price">998</span>
+              </router-link>
+              <router-link to="###" class="snack-item">
+                <img src="images/banner/yan02.jpg" alt />
+                <span class="title">最美我焰</span>
+                <span class="price">998</span>
+              </router-link>
+              <router-link to="###" class="snack-item">
+                <img src="images/banner/yan03.jpg" alt />
+                <span class="title">最美我焰</span>
+                <span class="price">998</span>
+              </router-link>
+              <router-link to="###" class="snack-item">
+                <img src="images/banner/yan04.jpg" alt />
+                <span class="title">最美我焰</span>
+                <span class="price">998</span>
+              </router-link>
+              <router-link to="###" class="snack-item">
+                <img src="images/banner/yan05.jpg" alt />
+                <span class="title">最美我焰</span>
+                <span class="price">998</span>
+              </router-link>
+              <router-link to="###" class="snack-item">
+                <img src="images/banner/yan06.jpg" alt />
+                <span class="title">最美我焰</span>
+                <span class="price">998</span>
+              </router-link>
+            </div>
+            <div style="height:30px;"></div>
+            <!-- index -->
           </div>
         </mt-tab-container-item>
         <!-- 分类 -->
@@ -80,15 +153,50 @@ export default {
     Classify: Classify,
     cart: Cart,
     own: Own
+  },
+  methods: {
+    detail() {
+      this.active = "myProduct";
+    }
   }
 };
 </script>
-<style>
+<style scope>
+.clearfix::before {
+  content: "";
+  clear: both;
+  display: block;
+}
+
+.clearfix::after {
+  content: "";
+  clear: both;
+  display: block;
+}
 /* 顶部食品类型 */
+
+img {
+  width: 95%;
+}
 .product-nav {
   margin: 0.28rem;
   text-align: center;
   display: flex;
+}
+.product-nav .list-nav {
+  width: 24%;
+  justify-content: space-around;
+}
+.product-nav .list-nav i {
+  display: block;
+  font-size: 1rem;
+  margin-bottom: 0.2rem;
+}
+
+.product-nav .list-nav span.list-menu {
+  font-size: 0.35rem;
+  color: #333;
+  display: block;
 }
 /* 公告 */
 .gonggao {
@@ -101,30 +209,26 @@ export default {
 .gonggao p {
   display: inline-block;
   position: relative;
-  white-space: nowrap;
-  vertical-align: middle;
 }
 .gonggao span.up {
-  background: #fff !important;
-  display: inline-block;
-  overflow: hidden;
-}
-.gonggao span i.laba {
-  display:inline-block;
-  width:15px;
-  height:15px;
-  background:url("/images/laba.png") no-repeat center center;
+  width: 4%;
+  background: #fff;
   color: #243f4c;
-  margin-right: 0.15rem;
   overflow: hidden;
-  z-index: 1000;
-  background-size: 100%;
+  vertical-align: middle;
+  float: left;
 }
-.gonggao span.slide{
+
+.gonggao .slide {
+  width: 96%;
   color: #795548;
-  animation: translatex 7s linear infinite;
-  animation-play-state: running;
+  float: left;
+  overflow: hidden;
+}
+.gonggao .slide i {
+  font-style: normal;
   display: inline-block;
+  animation: translatex 7s linear infinite;
   white-space: nowrap;
 }
 
@@ -136,17 +240,53 @@ export default {
     transform: translateX(-620px);
   }
 }
-
-.product-nav .list-nav {
-  width: 24%;
-  justify-content: space-around;
+/* 轮播 */
+.mint-swipe {
+  height: 200px !important;
+  width: 100%;
 }
-.product-nav .list-nav span {
-  font-size: 1.1rem;
-}
-/*  */
+/* classify */
 .mem {
-  height: 500px;
+  height: 5.333333rem;
+}
+/* 小食 */
+.snack-list {
+  width: 95%;
+  font-size: 0.45rem;
+  margin: 0.28rem auto;
+  box-sizing: border-box;
+  letter-spacing: 1px;
+}
+.snack-list .snack-title {
+  float: left;
+  text-align: left;
+  width: 50%;
+}
+.snack-list .product-more {
+  width: 50%;
+  text-align: right;
+  float: right;
+  color: #824e3b;
+  font-size: 0.45rem;
+}
+
+.snack-list .snack-item {
+  float: left;
+  width: 33.3%;
+  text-align: left;
+}
+.snack-item span {
+  margin: 0.12rem 0;
+  font-weight: 600;
+  white-space: pre-wrap;
+  font-size: 0.4rem;
+  display: block;
+}
+.snack-item .title {
+  color: #333;
+}
+.snack-item .price {
+  color: crimson;
 }
 /* 搜索框的高 */
 .mySearch {

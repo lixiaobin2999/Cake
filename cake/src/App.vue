@@ -20,7 +20,7 @@ export default {
 };
 </script>
 <style >
-@import "./assets/iconfont/iconfont.css";
+  @import "./assets/iconfont/iconfont.css";
 </style>
 <style>
 </style>
