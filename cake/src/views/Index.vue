@@ -31,7 +31,7 @@
             </div>
             <!-- 推荐 -->
             <router-link to="#">
-              <img src="images/banner/yan01.jpg" />
+              <img src="images/product/64sd78f5465sda4170.jpg" />
             </router-link>
             <!-- 公告 -->
             <div class="gonggao">
@@ -47,27 +47,27 @@
             <mt-swipe :auto="3000" :defaultIndex="0" :show-indicators="true">
               <mt-swipe-item>
                 <router-link to="#">
-                  <img src="images/banner/yan02.jpg" alt />
+                  <img src="images/product/64sd78f5465sda414.png" alt />
                 </router-link>
               </mt-swipe-item>
               <mt-swipe-item>
                 <router-link to="#">
-                  <img src="images/banner/yan03.jpg" alt />
+                  <img src="images/product/64sd78f5465sda4170.jpg" alt />
                 </router-link>
               </mt-swipe-item>
               <mt-swipe-item>
                 <router-link to="#">
-                  <img src="images/banner/yan04.jpg" alt />
+                  <img src="images/product/64sd78f5465sda4171.jpg" alt />
                 </router-link>
               </mt-swipe-item>
               <mt-swipe-item>
                 <router-link to="#">
-                  <img src="images/banner/yan05.jpg" alt />
+                  <img src="images/product/64sd78f5465sda4159.jpg" alt />
                 </router-link>
               </mt-swipe-item>
               <mt-swipe-item>
                 <router-link to="#">
-                  <img src="images/banner/yan06.jpg" alt />
+                  <img src="images/product/64sd78f5465sda4121.jpg" alt />
                 </router-link>
               </mt-swipe-item>
             </mt-swipe>
@@ -78,32 +78,32 @@
             </div>
             <div class="snack-list clearfix">
               <router-link to="###" class="snack-item">
-                <img src="images/banner/yan01.jpg" alt />
+                <img src="images/product/64sd78f5465sda4176.jpg" alt />
                 <span class="title">最美我焰</span>
                 <span class="price">998</span>
               </router-link>
               <router-link to="###" class="snack-item">
-                <img src="images/banner/yan02.jpg" alt />
+                <img src="images/product/64sd78f5465sda4176.jpg" alt />
                 <span class="title">最美我焰</span>
                 <span class="price">998</span>
               </router-link>
               <router-link to="###" class="snack-item">
-                <img src="images/banner/yan03.jpg" alt />
+                <img src="images/product/64sd78f5465sda4176.jpg" alt />
                 <span class="title">最美我焰</span>
                 <span class="price">998</span>
               </router-link>
               <router-link to="###" class="snack-item">
-                <img src="images/banner/yan04.jpg" alt />
+                <img src="images/product/64sd78f5465sda4176.jpg" alt />
                 <span class="title">最美我焰</span>
                 <span class="price">998</span>
               </router-link>
               <router-link to="###" class="snack-item">
-                <img src="images/banner/yan05.jpg" alt />
+                <img src="images/product/64sd78f5465sda4176.jpg" alt />
                 <span class="title">最美我焰</span>
                 <span class="price">998</span>
               </router-link>
               <router-link to="###" class="snack-item">
-                <img src="images/banner/yan06.jpg" alt />
+                <img src="images/product/64sd78f5465sda4176.jpg" alt />
                 <span class="title">最美我焰</span>
                 <span class="price">998</span>
               </router-link>
@@ -113,7 +113,7 @@
           </div>
         </mt-tab-container-item>
         <!-- 分类 -->
-        <mt-tab-container-item id="myProduct" class="mem">
+        <mt-tab-container-item id="myProduct" :style="`height:${resizeHeight}px`">
           <classify></classify>
         </mt-tab-container-item>
         <!-- 购物车 -->
@@ -141,12 +141,19 @@
 import Classify from "./Classify.vue";
 import Cart from "./Cart";
 import Own from "./Own";
-
 export default {
   data() {
     return {
-      active: "myIndex"
+      active: "myIndex",
+      // 屏幕的高度
+      resizeHeight: 650
     };
+  },
+  created() {
+    // 屏幕可用区域变化时执行
+    window.addEventListener("resize", () => {
+      this.resizeHeight = screen.availHeight;
+    });
   },
   // 注册子组件
   components: {
@@ -161,20 +168,18 @@ export default {
   }
 };
 </script>
-<style scope>
+<style scoped>
 .clearfix::before {
   content: "";
   clear: both;
   display: block;
 }
-
 .clearfix::after {
   content: "";
   clear: both;
   display: block;
 }
 /* 顶部食品类型 */
-
 img {
   width: 95%;
 }
@@ -192,7 +197,6 @@ img {
   font-size: 1rem;
   margin-bottom: 0.2rem;
 }
-
 .product-nav .list-nav span.list-menu {
   font-size: 0.35rem;
   color: #333;
@@ -205,7 +209,6 @@ img {
   display: inline-block;
   overflow: hidden;
 }
-
 .gonggao p {
   display: inline-block;
   position: relative;
@@ -218,7 +221,6 @@ img {
   vertical-align: middle;
   float: left;
 }
-
 .gonggao .slide {
   width: 96%;
   color: #795548;
@@ -231,7 +233,6 @@ img {
   animation: translatex 7s linear infinite;
   white-space: nowrap;
 }
-
 @keyframes translatex {
   0% {
     transform: translateX(0px);
@@ -247,7 +248,7 @@ img {
 }
 /* classify */
 .mem {
-  height: 5.333333rem;
+  height: 15.333333rem;
 }
 /* 小食 */
 .snack-list {
@@ -269,7 +270,6 @@ img {
   color: #824e3b;
   font-size: 0.45rem;
 }
-
 .snack-list .snack-item {
   float: left;
   width: 33.3%;
@@ -292,22 +292,16 @@ img {
 .mySearch {
   height: 52px;
 }
-
 .mint-searchbar {
   background-color: #efeff4 !important;
 }
-
 /* 取消的文字样式 */
 .mySearch .mint-searchbar-cancel {
   font-size: 14px !important;
   color: #000 !important;
 }
-
 /* 搜索框的文字样式 */
 .mySearch .mint-searchbar-core {
   font-size: 14px !important;
 }
 </style>
-
-
-

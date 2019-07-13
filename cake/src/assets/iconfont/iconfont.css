@@ -167,3 +167,27 @@
   content: "\e607";
 }
 
+
+
+.icon-27:before {
+  content: "\e61b";
+}
+
+
+
+.icon-fenxiang:before {
+  content: "\e608";
+}
+
+.icon-shoucang:before {
+  content: "\e655";
+}
+
+.icon-shouye:before {
+  content: "\e60f";
+}
+
+.icon-shouye1:before {
+  content: "\e65f";
+}
+
