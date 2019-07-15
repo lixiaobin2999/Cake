@@ -43,7 +43,7 @@ export default {
       right_list: [],
       selectedLabel: ""
     };
-  },
+  }, 
   created() {
     // 请求数据
     this.axios.get("/product/classify").then(result => {
@@ -100,22 +100,18 @@ export default {
 .mySearch {
   height: 52px;
 }
-
 .mint-searchbar {
   background-color: #efeff4 !important;
 }
-
 /* 取消的文字样式 */
 .mySearch .mint-searchbar-cancel {
   font-size: 14px !important;
   color: #000 !important;
 }
-
 /* 搜索框的文字样式 */
 .mySearch .mint-searchbar-core {
   font-size: 14px !important;
 }
-
 /* 左侧导航 */
 .let-tabbar {
   position: absolute;
@@ -125,11 +121,9 @@ export default {
   width: 100px;
   background-color: #f9f9f9;
 }
-
 .cube-scroll-list-wrapper {
   .cube-tab-bar {
     flex-wrap: wrap;
-
     .cube-tab {
       width: 100%;
       flex-basis: unset;
@@ -137,11 +131,9 @@ export default {
       line-height: 40px;
       font-size: 14px;
       color: #555;
-
       &.cube-tab_active {
         background-color: #fff;
         color: #fe9170;
-
         &::after {
           content: '';
           display: block;
@@ -151,7 +143,6 @@ export default {
     }
   }
 }
-
 .right-panel {
   position: absolute;
   top: 52px;
@@ -159,14 +150,12 @@ export default {
   right: 0;
   bottom: 0;
   background-color: #f9f9f9;
-
   ul {
     position: fixed;
     background-color: #fff;
     top: 0;
     left: 0;
   }
-
   li {
     float: left;
     margin-left: 19px;
@@ -181,12 +170,10 @@ export default {
     // text-overflow: ellipsis;
     // overflow: hidden;
     word-break: break-all;
-
     img {
       display: block;
       width: 100%;
     }
-
     span {
       font-size: 12px;
       color: #555;

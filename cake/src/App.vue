@@ -1,7 +1,6 @@
 <template>
   <div id="app">
     <router-view v-on:show_footer="show_footer" />
-    <!-- <my-footer v-if="footer_show"></my-footer> -->
   </div>
 </template>
 <script>

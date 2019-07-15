@@ -4,7 +4,6 @@ const express = require("express");
 const pool = require("../pool");
 // 创建路由器
 var router = express.Router();
-
 // 商品分类的路由
 router.get("/classify", (req, res) => {
   var sql = "SELECT cname,series,pic FROM cake_catalogue";
@@ -17,7 +16,6 @@ router.get("/classify", (req, res) => {
     }
   })
 });
-
 // 商品详情的路由
 router.get("/details", (req, res) => {
   // 商品的id
@@ -26,12 +24,10 @@ router.get("/details", (req, res) => {
     product: [],
     spec: []
   };
-
   if (!pid) {
     res.send({ code: 400, msg: "没有该商品" });
     return;
   }
-
   // 进入了这个商品的详情 浏览量加1
   var sql = "SELECT read_num FROM cake_product WHERE pid=?";
   pool.query(sql, [pid], (err, result) => {
@@ -51,7 +47,6 @@ router.get("/details", (req, res) => {
         pool.query(sql, [pid, pid], (err, result) => {
           if (err) throw err;
           output.product = result;
-
           // 获取商品规格的信息
           var sql = `SELECT sid,size,cake_spec.price,is_state,style,fruit,
                       else_message,repertory FROM cake_product INNER JOIN 
@@ -66,7 +61,5 @@ router.get("/details", (req, res) => {
     })
   });
 });
-
-
 
 module.exports = router;

@@ -104,17 +104,9 @@ export default {
           onCancel: this.cancelHandle
         });
       }
-
       this.dateTimePicker.show();
     },
     selectHandle(date, selectedVal, selectedText) {
-      // this.$createDialog({
-      //   type: "warn",
-      //   content: `Selected Item: <br/> - date: ${date} <br/> - value: ${selectedVal.join(
-      //     ", "
-      //   )} <br/> - text: ${selectedText.join(" ")}`,
-      //   icon: "cubeic-alert"
-      // }).show();
       this.time =
         selectedText[0] +
         "-" +
@@ -128,22 +120,12 @@ export default {
         ":" +
         selectedText[5];
     }
-    // cancelHandle() {
-    //   this.$createToast({
-    //     type: "correct",
-    //     txt: "Picker canceled",
-    //     time: 1000
-    //   }).show();
-    // }
   }
 };
 </script>
 <style>
 body {
   background: #f9f9f9;
-}
-.page-navbar {
-  /* margin-top: 20px; */
 }
 .page-part {
   border-bottom: 1px solid #ccc;

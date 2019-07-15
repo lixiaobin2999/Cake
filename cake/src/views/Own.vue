@@ -19,7 +19,6 @@
         <i class="iconfont logout" @click="logout">&#xe799;</i>
       </div>
     </div>
-
     <div class="order">
       <div class="own">
         <p class="section_title">我的订单</p>

@@ -4,7 +4,6 @@ const express = require("express");
 const pool = require("../pool");
 // 创建路由器
 var router = express.Router();
-
 // 用户注册 有正则验证
 router.post("/reg", (req, res) => {
   var phone = req.body.phone;
@@ -22,7 +21,6 @@ router.post("/reg", (req, res) => {
     res.send({ code: 400, msg: "密码格式不正确" });
     return;
   }
-
   var sql = "SELECT phone FROM cake_user WHERE phone=?";
   pool.query(sql, [phone], (err, result) => {
     if (err) throw err;
@@ -41,15 +39,11 @@ router.post("/reg", (req, res) => {
       })
     }
   })
-
 });
-
-
 // 用户登录 要传入 手机号和密码
 router.post("/login", (req, res) => {
   var phone = req.body.phone;
   var upwd = req.body.upwd;
-
   if (!phone) {
     res.send({ code: 400, msg: "手机号不能为空" });
     return;
@@ -58,7 +52,6 @@ router.post("/login", (req, res) => {
     res.send({ code: 400, msg: "密码不能为空" });
     return;
   }
-
   var sql = "SELECT uid FROM cake_user WHERE phone=? AND upwd=md5(?)";
   pool.query(sql, [phone, upwd], (err, result) => {
     if (err) throw err;
@@ -72,8 +65,6 @@ router.post("/login", (req, res) => {
     }
   })
 });
-
-
 // 个人中心 /own
 router.post("/own", (req, res) => {
   var uid = req.body.uid;
@@ -82,7 +73,6 @@ router.post("/own", (req, res) => {
     res.send({ code: 400, msg: "没有登录,请先登录" });
     return;
   }
-
   var sql = `SELECT uname,phone,avatar,real_name,birthday,gender FROM cake_user 
   WHERE uid=?`;
   pool.query(sql, [uid], (err, result) => {
@@ -96,8 +86,4 @@ router.post("/own", (req, res) => {
     }
   })
 })
-
-
-
-
 module.exports = router;

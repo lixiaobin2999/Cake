@@ -8,9 +8,7 @@
         <span class="input_sp input_red" v-if="item.selected" @click="radios(index)"></span>
         <span class="input_sp" v-if="!item.selected" @click="radios(index)"></span>
       </label>
-
       <img class="img" src="images/1.jpg" alt />
-
       <div>
         <span class="title_sp">
           <span v-text="item.pname"></span>
@@ -150,26 +148,6 @@ export default {
       }
       this.hh();
     }
-
-    // selectAll(e) {
-    //   //全选按钮状态
-    //   var cb = e.target.checked;
-    // console.log(cb);
-    //   //依据状态修改列表cb
-    //   for (var item of this.list) {
-    //     item.cb = cb;
-    //   }
-    // },
-    // select() {
-    //   for (var item of this.list) {
-    //     if (item.cb != true) {
-    //       this.isSelectAll = false;
-    //       return;
-    //     } else {
-    //       this.isSelectAll = true;
-    //     }
-    //   }
-    // }
   }
 };
 </script>

@@ -141,11 +141,9 @@ export default {
       product_list: []
     };
   },
-  // props: ["old_active"],
   created() {
     // 有其他页面返回到首页时,去到特定的页面
     // if(this)
-    // console.log(this.old_active);
     // 屏幕可用区域变化时执行 (分类的高度需要与屏幕高度一样)
     this.resizeHeight = screen.availHeight;
     window.addEventListener("resize", () => {

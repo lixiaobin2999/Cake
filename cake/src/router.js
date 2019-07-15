@@ -8,9 +8,7 @@ import Own from './views/Own'
 import Login from './views/Login'
 import Information from './views/Information'
 import Close from './views/Close.vue'
-
 Vue.use(Router)
-
 export default new Router({
   routes: [
     {

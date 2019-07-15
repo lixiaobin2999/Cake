@@ -213,13 +213,6 @@ export default {
               this.is_state_list.push(spec[i]);
             }
             if (spec[i].size != null) {
-              // this.size_list = this.size_list.push(spec[i]);
-              // this.size_list[spec[i].size] = spec[i];
-              // for (var name of this.size_list) {
-              //   if (name == spec[i].size) {
-              //     this.size_list.push(this.size_list[spec[i].size]);
-              //   }
-              // }
               this.size_list.push(spec[i]);
             }
             if (spec[i].style != null) {
@@ -240,14 +233,6 @@ export default {
           this.priceAll = min_price + "~" + max_price;
           // 所有库存
           this.repertoryAll = repertory;
-
-          // for (var i = 0; i < spec.length; i++) {
-          //   for (var j = 0; j < this.size_list.length; j++) {
-          //     if (this.size_list[j].size == spec[i].size) {
-          //       this.size_list.splice(j, 1);
-          //     }
-          //   }
-          // }
           console.log(this.size_list);
         });
     },
@@ -270,7 +255,6 @@ export default {
 <style scoped>
 .fanhui::before {
   content: "<";
-  display: inline-block;
   font-size: 25px;
   float: left;
   margin-left: 10px;

@@ -16,14 +16,8 @@
       </div>
       <div class="sex_info">
         性别:
-        <label for="male">
-          男
-          <input type="radio" name="sex" id="male" />
-        </label>
-        <label for="female">
-          女
-          <input type="radio" name="sex" id="female" />
-        </label>
+        <label for="male">男<input type="radio" name="sex" id="male" /></label>
+        <label for="female">女<input type="radio" name="sex" id="female" /></label>
       </div>
       <div class="selectBirth sex_info" @click="showFormatPicker">
         <span>生日:&nbsp;&nbsp;</span>
@@ -37,9 +31,6 @@
 <script>
 export default {
   // 返回上一级 是回到个人中心页
-  // props:{
-  //   old_active: "me"
-  // },
   data() {
     return {
       birth: "请选择生日", //页面显示的日期
