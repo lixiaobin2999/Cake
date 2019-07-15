@@ -1,9 +1,8 @@
 <template >
   <div class="container">
     <!-- .icon-fenxiang -->
-    <h1 class="fanhui" style="font-size:24px;text-align:center;margin-top:10px;" @click="$router.go(-1);">
-      商品详情
-    </h1>
+    <!-- -1表示上一个路由 -->
+    <h1 class="fanhui" @click="$router.go(-1);">商品详情</h1>
     <!-- 大图 -->
     <div style="margin:0.25rem 0">
       <img :src="`http://127.0.0.1:7000/${list.pic}`" alt />
@@ -198,7 +197,7 @@ export default {
           this.list = result.data.data.product[0];
           var spec = result.data.data.spec;
           this.spec_list = spec;
-          // console.log(spec);
+          // // console.log(spec);
           // 价钱的数组
           var priceArray = [];
           // 库存
@@ -206,7 +205,7 @@ export default {
           for (var i = 0; i < spec.length; i++) {
             repertory += spec[i].repertory;
             priceArray.push(spec[i].price);
-            console.log(spec[i]);
+            // console.log(spec[i]);
             if (spec[i].is_state != "-1") {
               this.is_state_list.push(spec[i]);
             }
@@ -228,7 +227,11 @@ export default {
           // 最低价
           var min_price = Math.min.apply(null, priceArray);
           // console.log(min_price, max_price);
-          this.priceAll = min_price + "~" + max_price;
+          if (max_price == min_price) {
+            this.priceAll = max_price;
+          } else {
+            this.priceAll = min_price + "~" + max_price;
+          }
           // 所有库存
           this.repertoryAll = repertory;
           console.log(this.size_list);
@@ -251,6 +254,11 @@ export default {
 };
 </script>
 <style scoped>
+.fanhui {
+  font-size: 24px;
+  text-align: center;
+  margin-top: 10px;
+}
 .fanhui::before {
   content: "<";
   font-size: 25px;

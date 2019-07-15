@@ -1,18 +1,18 @@
 <template >
-  <div >
+  <div>
     <div class="mySearch">
       <!-- 点击搜索框后要跳到一个新的组件页面 -->
       <mt-search autofocus v-model="value" :result="filterResult"></mt-search>
     </div>
     <!-- 左侧边栏 -->
     <div class="let-tabbar">
-      <div class="left-panel">
+      <div class ="left-panel">
         <cube-scroll>
           <cube-tab-bar
             v-model="selectedLabel"
             :data="Object.keys(left_list).map(label => ({label}))"
-            @change="changeHandler">
-          </cube-tab-bar>
+            @change="changeHandler"
+          ></cube-tab-bar>
         </cube-scroll>
       </div>
     </div>
@@ -42,7 +42,7 @@ export default {
       right_list: [],
       selectedLabel: ""
     };
-  }, 
+  },
   created() {
     // 请求数据
     this.axios.get("/product/classify").then(result => {
@@ -61,13 +61,16 @@ export default {
         // 如果对象的属性名和数据里的分类名称一样就放进该对象里的数组里
         for (var name of obj_name) {
           if (name == data[i].cname) {
+            console.log(data[i].cname)
             obj_list[name].push(data[i]);
           }
         }
       }
       this.left_list = obj_list;
-      // 加载第一个区域
+      console.log(obj_list)
+      // 加载第一个区域 左侧类名
       this.selectedLabel = Object.keys(this.left_list)[0];
+      // 加载第一个区域 右侧系列
       this.right_list = this.left_list[this.selectedLabel];
     });
   },
@@ -75,6 +78,7 @@ export default {
     changeHandler(label) {
       // 点击左边后换到别的区域
       this.right_list = this.left_list[label];
+        console.log(this.left_list[label])
       // console.log(this.right_list);
     }
   },
@@ -98,18 +102,22 @@ export default {
 .mySearch {
   height: 52px;
 }
+
 .mint-searchbar {
   background-color: #efeff4 !important;
 }
+
 /* 取消的文字样式 */
 .mySearch .mint-searchbar-cancel {
   font-size: 14px !important;
   color: #000 !important;
 }
+
 /* 搜索框的文字样式 */
 .mySearch .mint-searchbar-core {
   font-size: 14px !important;
 }
+
 /* 左侧导航 */
 .let-tabbar {
   position: absolute;
@@ -119,9 +127,11 @@ export default {
   width: 100px;
   background-color: #f9f9f9;
 }
+
 .cube-scroll-list-wrapper {
   .cube-tab-bar {
     flex-wrap: wrap;
+
     .cube-tab {
       width: 100%;
       flex-basis: unset;
@@ -129,9 +139,11 @@ export default {
       line-height: 40px;
       font-size: 14px;
       color: #555;
+
       &.cube-tab_active {
         background-color: #fff;
         color: #fe9170;
+
         &::after {
           content: '';
           display: block;
@@ -141,6 +153,7 @@ export default {
     }
   }
 }
+
 .right-panel {
   position: absolute;
   top: 52px;
@@ -148,12 +161,14 @@ export default {
   right: 0;
   bottom: 0;
   background-color: #f9f9f9;
+
   ul {
     position: fixed;
     background-color: #fff;
     top: 0;
     left: 0;
   }
+
   li {
     float: left;
     margin-left: 19px;
@@ -168,10 +183,12 @@ export default {
     // text-overflow: ellipsis;
     // overflow: hidden;
     word-break: break-all;
+
     img {
       display: block;
       width: 100%;
     }
+
     span {
       font-size: 12px;
       color: #555;

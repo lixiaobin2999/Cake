@@ -4,7 +4,7 @@
       <mt-tab-container v-model="active">
         <!-- 首页 -->
         <mt-tab-container-item id="myIndex">
-          <div class="myIndexBotton" style="text-align: center;;width:100%">
+          <div class="myIndexBotton" style="text-align:center;width:100%">
             <h1 style="margin:10px auto">首页</h1>
             <!-- 搜索 -->
             <div class="mySearch">
@@ -148,7 +148,6 @@ export default {
     window.addEventListener("resize", () => {
       this.resizeHeight = screen.availHeight;
     });
-
     // 获取后台数据显示 需要传入某系列的cid
     var cid = 7;
     this.axios.get("/index/index", { params: { cid: cid } }).then(result => {

@@ -78,8 +78,6 @@ export default {
           }
         });
     }
-    // 需要公共的头部和尾部
-    // this.$emit("show_footer", false);
   },
   methods: {
     selectAll(e) {
@@ -104,7 +102,7 @@ export default {
       }
     },
     //总价和数量更改
-    hh: function() {
+    hh() {
       //数量*单价的价格
       var price = 0;
       //勾选数量
@@ -130,7 +128,7 @@ export default {
       // console.log(list[index].selected);
     },
     //添加
-    btn_add: function(index) {
+    btn_add(index) {
       var list = this.list;
       var count = list[index].count;
       count = count + 1;
