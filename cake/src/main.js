@@ -22,7 +22,7 @@ Vue.use(Cube)
 import axios from 'axios'
 Vue.prototype.axios = axios;
 // 配置axios发送请求时保存session信息
-axios.defaults.withCredentials = true;
+axios.defaults.withCredentials = true
 // 配置axios基础路径
 axios.defaults.baseURL = "http://127.0.0.1:7700"
 
