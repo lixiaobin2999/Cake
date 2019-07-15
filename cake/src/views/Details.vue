@@ -1,11 +1,9 @@
-<template>
+<template >
   <div class="container">
     <!-- .icon-fenxiang -->
-    <h1
-      class="fanhui"
-      style="font-size:24px;text-align:center;margin-top:10px;"
-      @click="$router.go(-1);"
-    >商品详情</h1>
+    <h1 class="fanhui" style="font-size:24px;text-align:center;margin-top:10px;" @click="$router.go(-1);">
+      商品详情
+    </h1>
     <!-- 大图 -->
     <div style="margin:0.25rem 0">
       <img :src="`http://127.0.0.1:7000/${list.pic}`" alt />

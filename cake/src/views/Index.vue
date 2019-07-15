@@ -1,4 +1,4 @@
-<template>
+<template >
   <div>
     <div>
       <mt-tab-container v-model="active">
@@ -104,7 +104,6 @@
           <own></own>
         </mt-tab-container-item>
       </mt-tab-container>
-
       <!-- 底部 -->
       <mt-tabbar v-model="active" fixed>
         <mt-tab-item id="myIndex">

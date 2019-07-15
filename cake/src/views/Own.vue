@@ -1,4 +1,4 @@
-<template>
+<template >
   <div class="total">
     <!-- 未登录状态下 -->
     <div class="not_login" v-if="uphone==''">

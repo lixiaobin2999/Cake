@@ -1,14 +1,13 @@
-// 引入express
-const express = require("express");
+// 引入 express
+const express=require("express");
 // 引入连接池
-const pool = require("../pool");
+const pool=require("../pool");
 // 创建路由器
-var router = express.Router();
-// 用户注册 有正则验证
+var router=express.Router();
+// 用户注册 正则验证
 router.post("/reg", (req, res) => {
-  var phone = req.body.phone;
-  var upwd = req.body.upwd;
-
+  var phone=req.body.phone;
+  var upwd=req.body.upwd;
   var reg1 = /^1[3-9]\d{9}$/; // 手机号码的正则表达式
   if (!reg1.test(phone)) {
     res.send({ code: 400, msg: "手机号格式不正确" });
@@ -41,16 +40,16 @@ router.post("/reg", (req, res) => {
   })
 });
 // 用户登录 要传入 手机号和密码
-router.post("/login", (req, res) => {
+router.post("/login",(req,res) => {
   var phone = req.body.phone;
   var upwd = req.body.upwd;
-  if (!phone) {
+  if (!phone){
     res.send({ code: 400, msg: "手机号不能为空" });
-    return;
+    return ;
   }
   if (!upwd) {
     res.send({ code: 400, msg: "密码不能为空" });
-    return;
+    return ;
   }
   var sql = "SELECT uid FROM cake_user WHERE phone=? AND upwd=md5(?)";
   pool.query(sql, [phone, upwd], (err, result) => {
@@ -85,5 +84,5 @@ router.post("/own", (req, res) => {
       res.send({ code: 400, msg: "没有该用户存在,请先注册" });
     }
   })
-})
-module.exports = router;
+});
+module.exports=router;

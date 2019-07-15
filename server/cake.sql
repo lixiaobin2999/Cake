@@ -216,7 +216,6 @@ INSERT INTO cake_product VALUE
 (82,11,"生日帽",8,"images/product/shrm111.jpg",0,0,NULL,NULL,1),
 (83,11,"保温袋",15,"images/product/baoxiandai555.jpg",0,0,NULL,NULL,1);
 
-
 /*商品规格*/
 INSERT INTO cake_spec value
 (NULL,1,"4寸",198,-1,NULL,"芒果",NULL,97), 

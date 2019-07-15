@@ -1,4 +1,4 @@
-<template>
+<template >
   <div class="page-navbar">
     <mt-navbar class="page-part" v-model="selected">
       <mt-tab-item id="1">注册</mt-tab-item>

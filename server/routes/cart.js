@@ -33,7 +33,6 @@ router.post("/set_cart", (req, res) => {
   var product_id = req.body.product_id;
   var sid = req.body.sid;
   var count = req.body.count;
-
   if (!user_id) {
     res.send({ code: 400, msg: "用户没有登录" });
     return;

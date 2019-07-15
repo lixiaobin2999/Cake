@@ -1,4 +1,4 @@
-<template>
+<template >
   <div class="page-navbar">
     <mt-navbar class="page-part" v-model="selected">
       <mt-tab-item id="1">
@@ -74,22 +74,9 @@ export default {
     var date = time.getDate();
     var current = year + "-" + month + "-" + date;
     var hours = time.getHours();
-    var minutes =
-      time.getMinutes() < 10 ? "0" + time.getMinutes() : time.getMinutes();
-    var second =
-      time.getSeconds() < 10 ? "0" + time.getSeconds() : time.getSeconds();
-    this.time =
-      year +
-      "-" +
-      month +
-      "-" +
-      date +
-      " " +
-      hours +
-      ":" +
-      minutes +
-      ":" +
-      second;
+    var minutes =time.getMinutes() < 10 ? "0" + time.getMinutes() : time.getMinutes();
+    var second =time.getSeconds() < 10 ? "0" + time.getSeconds() : time.getSeconds();
+    this.time =year +"-" +month +"-" +date +" " +hours +":" +minutes +":" +second;
   },
   methods: {
     showDateTimePicker() {

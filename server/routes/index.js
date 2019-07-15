@@ -1,9 +1,9 @@
-// 引入express
-const express = require("express");
+// 引入Express
+const express=require("express");
 // 引入连接池
-const pool = require("../pool");
+const pool=require("../pool");
 // 创建路由器
-var router = express.Router();
+var router=express.Router();
 // 需要一个参数,某个系列的id
 router.get("/index", (req, res) => {
   // 哪个系列下的所有商品
@@ -36,4 +36,4 @@ router.get("/index", (req, res) => {
     })
   })
 });
-module.exports = router;
+module.exports=router;

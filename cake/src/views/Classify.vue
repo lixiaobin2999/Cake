@@ -1,10 +1,9 @@
-<template>
-  <div>
+<template >
+  <div >
     <div class="mySearch">
       <!-- 点击搜索框后要跳到一个新的组件页面 -->
       <mt-search autofocus v-model="value" :result="filterResult"></mt-search>
     </div>
-    <!-- <h1>dsadsa</h1> -->
     <!-- 左侧边栏 -->
     <div class="let-tabbar">
       <div class="left-panel">
@@ -12,8 +11,8 @@
           <cube-tab-bar
             v-model="selectedLabel"
             :data="Object.keys(left_list).map(label => ({label}))"
-            @change="changeHandler"
-          ></cube-tab-bar>
+            @change="changeHandler">
+          </cube-tab-bar>
         </cube-scroll>
       </div>
     </div>
@@ -47,14 +46,13 @@ export default {
   created() {
     // 请求数据
     this.axios.get("/product/classify").then(result => {
-      // console.log(result.data.msg);
       var data = result.data.data;
       // 请求回来的数据格式不是我想要的数据格式要转成:
       // left_list: {蛋糕:[{name:"蛋糕",pic:"images/1.jspg"},...],...,...,}
       var obj_list = {};
       var obj_name = [];
       for (var i = 0; i < data.length; i++) {
-        // 如果这个对象名里没有东西就强行赋值为一个空数组
+        // 如果这个对象名里没有东西就赋值为一个空数组
         if (obj_list[data[i].cname] == undefined) {
           obj_list[data[i].cname] = [];
         }
