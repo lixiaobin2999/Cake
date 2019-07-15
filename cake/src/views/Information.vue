@@ -98,8 +98,7 @@ export default {
 </script>
 <style>
 .all_font {
-  font: 0.12rem/1.5 "Hiragino Sans GB", STFangsong, "Microsoft YaHei", Helvetica,
-    STXihei, Arial, serif;
+  font: 0.12rem;
   color: #3e3e3e;
 }
 .header {

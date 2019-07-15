@@ -155,7 +155,7 @@ export default {
 .none {
   display: none;
 }
-.title{
+.cart .title{
   text-align: center;
   /* display: block; */
   color:#303030;

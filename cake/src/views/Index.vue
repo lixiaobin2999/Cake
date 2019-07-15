@@ -306,6 +306,7 @@ img {
 }
 .snack-item .title {
   display: inline-block;
+  text-align: left;
   color: #333;
   height: 32px;
 }

@@ -95,13 +95,11 @@ export default {
   margin-top: 10px;
 }
 .order {
-  font: 13px "Hiragino Sans GB", STFangsong, "Microsoft YaHei", Helvetica,
-    STXihei, Arial, serif !important;
+  font-size:0.34rem ;
   background: #fff;
 }
 .service {
-  font: 13px "Hiragino Sans GB", STFangsong, "Microsoft YaHei", Helvetica,
-    STXihei, Arial, serif !important;
+  font-size:0.34rem !important;
   background: #fff;
 }
 .section_title {
