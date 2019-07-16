@@ -6,7 +6,7 @@ const pool = require("../pool");
 var router = express.Router();
 // 商品分类的路由
 router.get("/classify", (req, res) => {
-  var sql = "SELECT cname,series,pic FROM cake_catalogue";
+  var sql = "SELECT cid,cname,series,pic FROM cake_catalogue";
   pool.query(sql, (err, result) => {
     if (err) throw err;
     if (result.length > 0) {

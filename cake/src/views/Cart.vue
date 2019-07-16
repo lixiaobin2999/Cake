@@ -1,4 +1,4 @@
-<template >
+<template>
   <div class="cart">
     <h1 class="title">购物车</h1>
     <div class="cart_box" v-for="(item,index) of list" :key="index">
@@ -7,7 +7,9 @@
         <span class="input_sp input_red" v-if="item.selected" @click="radios(index)"></span>
         <span class="input_sp" v-if="!item.selected" @click="radios(index)"></span>
       </label>
+
       <img class="img" src="images/1.jpg" alt />
+
       <div>
         <span class="title_sp">
           <span v-text="item.pname"></span>
@@ -78,6 +80,8 @@ export default {
           }
         });
     }
+    // 需要公共的头部和尾部
+    // this.$emit("show_footer", false);
   },
   methods: {
     selectAll(e) {
@@ -102,7 +106,7 @@ export default {
       }
     },
     //总价和数量更改
-    hh() {
+    hh: function() {
       //数量*单价的价格
       var price = 0;
       //勾选数量
@@ -128,7 +132,7 @@ export default {
       // console.log(list[index].selected);
     },
     //添加
-    btn_add(index) {
+    btn_add: function(index) {
       var list = this.list;
       var count = list[index].count;
       count = count + 1;
@@ -145,6 +149,26 @@ export default {
       }
       this.hh();
     }
+
+    // selectAll(e) {
+    //   //全选按钮状态
+    //   var cb = e.target.checked;
+    // console.log(cb);
+    //   //依据状态修改列表cb
+    //   for (var item of this.list) {
+    //     item.cb = cb;
+    //   }
+    // },
+    // select() {
+    //   for (var item of this.list) {
+    //     if (item.cb != true) {
+    //       this.isSelectAll = false;
+    //       return;
+    //     } else {
+    //       this.isSelectAll = true;
+    //     }
+    //   }
+    // }
   }
 };
 </script>
@@ -152,15 +176,15 @@ export default {
 .none {
   display: none;
 }
-.cart .title{
+.cart .title {
   text-align: center;
   /* display: block; */
-  color:#303030;
-  height:30px;
+  color: #303030;
+  height: 30px;
   font-weight: bold;
-  background:#ffffff;
+  background: #ffffff;
   line-height: 30px;
-  padding:3px 0 3px 0;
+  padding: 3px 0 3px 0;
   font-size: 22px;
 }
 .cart {
@@ -171,7 +195,7 @@ export default {
   /* justify-content: space-between; */
   background-color: #f9f9f9;
 }
-.cart_box {
+.cart .cart_box {
   display: flex;
   /* margin-top:20px; */
   width: 100%;
@@ -184,7 +208,7 @@ export default {
 #bottom_input {
   display: none;
 }
-.input_sp {
+.cart .input_sp {
   display: block;
   width: 20px;
   height: 20px;
@@ -192,44 +216,44 @@ export default {
   border-radius: 50%;
   margin: 45px 8px 0 8px;
 }
-.input_red {
+.cart .input_red {
   background: #f00;
 }
-.img {
+.cart .img {
   width: 100px;
   margin-top: 10px;
   margin-right: 10px;
   height: 90px;
 }
-.title_sp {
+.cart .title_sp {
   display: block;
   font-size: 16px;
   color: #7b7b7b;
   margin-top: 14px;
 }
-.state {
+.cart .state {
   display: block;
   font-size: 14px;
   color: #adadad;
   margin-top: 10px;
 }
-.state span {
+.cart .state span {
   margin-right: 5px;
 }
-.sprice {
+.cart .sprice {
   display: block;
   font-size: 16px;
   color: #ff6464;
   margin-top: 10px;
 }
-.btn {
+.cart .btn {
   display: block;
   width: 130px;
   position: relative;
   right: 0px;
   top: 60px;
 }
-.sbtn {
+.cart .sbtn {
   display: inline-block;
   text-align: center;
   line-height: 30px;
@@ -239,7 +263,7 @@ export default {
   color: #a3a3a3;
   font-size: 18px;
 }
-.btn_value {
+.cart .btn_value {
   display: inline-block;
   text-align: center;
   line-height: 30px;
@@ -251,15 +275,15 @@ export default {
   margin: 0 2px 0 2px;
 }
 /* 底部样式 */
-.bottom {
+.cart .bottom {
   position: fixed;
   justify-content: space-between;
-  bottom: 50px;
+  bottom: 56px;
   width: 100%;
   background: #fff;
   height: 50px;
 }
-.bottom_input {
+.cart .bottom_input {
   /* display: none; */
   display: inline-block;
   width: 20px;
@@ -271,42 +295,42 @@ export default {
 #bottom_input:checked + .bottom_input {
   background: #f00;
 }
-.all {
+.cart .all {
   display: inline-block;
   position: relative;
   bottom: 5px;
   font-size: 13px;
   color: #6c6c6c;
 }
-.money {
+.cart .money {
   display: block;
   font-size: 13px;
   margin-bottom: 10px;
   line-height: 10px;
   color: #ff5150;
 }
-.sum {
+.cart .sum {
   display: block;
   font-size: 13px;
   color: #ff5150;
   line-height: 10px;
 }
-.count {
+.cart .count {
   display: inline-block;
   position: relative;
-  top: 3px;
+  top: 5px;
   margin-left: 10px;
   width: 100px;
   height: 40px;
 }
-.bottom_right {
+.cart .bottom_right {
   display: inline-block;
   position: relative;
-  bottom: 4px;
+  bottom: 6px;
   right: -44px;
   line-height: 50px;
 }
-.delete {
+.cart .delete {
   display: inline-block;
   text-align: center;
   width: 80px;
@@ -315,7 +339,7 @@ export default {
   color: #fff;
   font-size: 13px;
 }
-.close {
+.cart .close {
   display: inline-block;
   text-align: center;
   width: 80px;

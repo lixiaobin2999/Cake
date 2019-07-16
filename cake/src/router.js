@@ -21,6 +21,6 @@ export default new Router({
     {path: "/Login",  component: Login},
     {path: "/Infornation",  component: Information},
     {path: "/Close",  component: Close},
-    {path: "/List",  component: productList},
+    {path: "/List/:cid",  component: productList,props: true},
   ]
 })

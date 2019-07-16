@@ -1,11 +1,15 @@
-<template >
+<template>
   <div class="container">
     <!-- .icon-fenxiang -->
-    <!-- -1表示上一个路由 -->
-    <h1 class="fanhui" @click="$router.go(-1);">商品详情</h1>
+    <h1
+      class="fanhui"
+      style="font-size:24px;text-align:center;margin-top:10px;"
+      @click="$router.go(-1);"
+    >商品详情</h1>
+    <div @click="$router.push('/Cart')" class="iconfont toCart">&#xe611;</div>
     <!-- 大图 -->
-    <div style="margin:0.25rem 0">
-      <img :src="`http://127.0.0.1:7000/${list.pic}`" alt />
+    <div class="largeImg">
+      <img v-if="list.pic!=undefined" :src="`http://127.0.0.1:7700/${list.pic}`" />
     </div>
     <!-- 简介 -->
     <div class="intro">
@@ -14,7 +18,7 @@
         <span class="pname" v-text="list.pname"></span>
       </div>
       <div class="fengxiang">
-        <div class="iconfont">&#xe608;</div>
+        <div class="iconfont">&#xe739;</div>
         <p>分享</p>
       </div>
       <div class="clearfix countAll">
@@ -38,7 +42,11 @@
     </div>
     <mt-tab-container v-model="active">
       <mt-tab-container-item id="tab1">
-        <img :src="`http://127.0.0.1:7000/${list.details_pic}`" alt />
+        <img
+          v-if="list.details_pic!=undefined"
+          :src="`http://127.0.0.1:7700/${list.details_pic}`"
+          alt
+        />
       </mt-tab-container-item>
       <mt-tab-container-item id="tab2">
         <mt-button size="small" @click.native.prevent="active = ''">全部</mt-button>
@@ -55,7 +63,7 @@
           <span @click="$router.push('/Index');">首页</span>
         </li>
         <li class="li-nav">
-          <i class="iconfont">&#xe602;</i>
+          <i class="iconfont">&#xe608;</i>
           <span>收藏</span>
         </li>
         <li class="buy">
@@ -72,7 +80,7 @@
       <div class="Spec">
         <!-- 上面图片 价格 库存 -->
         <div class="pic_list">
-          <img :src="`http://127.0.0.1:7000/${list.pic}`" />
+          <img v-if="list.pic!=undefined" :src="`http://127.0.0.1:7700/${list.pic}`" />
           <div v-text="`￥168-288`"></div>
           <div class="Repertory">
             库存
@@ -80,63 +88,16 @@
           </div>
         </div>
         <div class="Spec_select">
-          <!-- 尺寸 -->
-          <div class="Size" v-if="size_list!=''">
-            <span class="Spec_name">尺寸</span>
+          <!-- 规格 -->
+          <div class="Size" v-for="(ProductItem,i) of spec_lists.specifications" :key="i">
+            <span class="Spec_name" v-text="ProductItem.name"></span>
             <div class="Size_select">
               <span
-                :class="{spec_active:spec_active}"
-                v-for="(item,i) in size_list"
-                :key="i"
-                v-text="item.size"
-              ></span>
-            </div>
-          </div>
-          <!-- 状态 -->
-          <div class="Size" v-if="is_state_list!=''">
-            <span class="Spec_name">状态</span>
-            <div class="Size_select">
-              <span
-                :class="{spec_active:spec_active}"
-                v-for="(item,i) of is_state_list"
-                :key="i"
-                v-text="item.is_state"
-              ></span>
-            </div>
-          </div>
-          <!-- 款式 -->
-          <div class="Size" v-if="style_list!=''">
-            <span class="Spec_name">款式</span>
-            <div class="Size_select">
-              <span
-                :class="{spec_active:spec_active}"
-                v-for="(item,i) of style_list"
-                :key="i"
-                v-text="item.style"
-              ></span>
-            </div>
-          </div>
-          <!-- 水果 -->
-          <div class="Size" v-if="fruit_list!=''">
-            <span class="Spec_name">水果</span>
-            <div class="Size_select">
-              <span
-                :class="{spec_active:spec_active}"
-                v-for="(item,i) of fruit_list"
-                :key="i"
-                v-text="item.fruit"
-              ></span>
-            </div>
-          </div>
-          <!-- 其他规格 -->
-          <div class="Size" v-if="else_message_list!=''">
-            <span class="Spec_name">水果</span>
-            <div class="Size_select">
-              <span
-                :class="{spec_active:spec_active}"
-                v-for="(item,i) of else_message_list"
-                :key="i"
-                v-text="item.else_message"
+                v-for="(Item,index) of ProductItem.item"
+                :key="index"
+                v-text="`${Item.name==0?'预定':Item.name==1?'现货':Item.name}`"
+                @click="selectState(Item.name,i,index)"
+                :class="[Item.isShow?'':'noneActive',subIndex[i] == index?'spec_active':'']"
               ></span>
             </div>
           </div>
@@ -144,9 +105,9 @@
         <div class="Number">
           <span>数量</span>
           <div class="Input">
-            <span>-</span>
-            <input type="text" value="1" />
-            <span>+</span>
+            <span @click="addNum(-1)">-</span>
+            <input type="text" v-model="number" />
+            <span @click="addNum(+1)">+</span>
           </div>
         </div>
       </div>
@@ -159,7 +120,7 @@ export default {
     // name:"Tabbar"
     return {
       active: "tab1",
-      list: [],
+      list: {},
       // 显示规格
       show_spec: false,
       // 最低~最高价钱
@@ -181,7 +142,19 @@ export default {
       // 选中了那个规格
       spec_active: false,
       // 尺寸的数据
-      size_list: []
+      size_list: [],
+      // 多规格 数据
+      spec_lists: {
+        //所有的规格可能情况都在这个数组里
+        difference: [],
+        // 这里是要被渲染字段
+        specifications: []
+      },
+      selectArr: [], //存放被选中的值
+      shopItemInfo: {}, //存放要和选中的值进行匹配的数据
+      subIndex: [], //是否选中 因为不确定是多规格还是但规格，所以这里定义数组来判断
+      // 加入购物车商品数量
+      number: 1
     };
   },
   props: ["pid"],
@@ -197,70 +170,216 @@ export default {
           this.list = result.data.data.product[0];
           var spec = result.data.data.spec;
           this.spec_list = spec;
-          // // console.log(spec);
+          // console.log(spec);
           // 价钱的数组
           var priceArray = [];
           // 库存
-          var repertory = 0;
+          var Repertory = 0;
+          // difference 需要的格式是  size,is_state,style,fruit,else_message
           for (var i = 0; i < spec.length; i++) {
-            repertory += spec[i].repertory;
+            var str = "";
+            Repertory += spec[i].repertory;
             priceArray.push(spec[i].price);
-            // console.log(spec[i]);
-            if (spec[i].is_state != "-1") {
-              this.is_state_list.push(spec[i]);
-            }
+            // 取到每个规格的数据,并添加一个是否选中状态select
+            spec[i].select = false;
             if (spec[i].size != null) {
               this.size_list.push(spec[i]);
+              str += spec[i].size + ",";
+            }
+            if (spec[i].is_state != "-1") {
+              this.is_state_list.push(spec[i]);
+              str += spec[i].is_state + ",";
             }
             if (spec[i].style != null) {
               this.style_list.push(spec[i]);
+              str += spec[i].style + ",";
             }
             if (spec[i].fruit != null) {
               this.fruit_list.push(spec[i]);
+              str += spec[i].fruit + ",";
             }
             if (spec[i].else_message != null) {
               this.else_message_list.push(spec[i]);
+              str += spec[i].else_message;
             }
+            // 去掉最后的","号 再赋值
+            spec[i].difference = str.substring(0, str.length - 1);
           }
           // 最高价
           var max_price = Math.max.apply(null, priceArray);
           // 最低价
           var min_price = Math.min.apply(null, priceArray);
-          // console.log(min_price, max_price);
-          if (max_price == min_price) {
-            this.priceAll = max_price;
+          if (min_price == max_price) {
+            this.priceAll = min_price;
           } else {
             this.priceAll = min_price + "~" + max_price;
           }
           // 所有库存
-          this.repertoryAll = repertory;
-          console.log(this.size_list);
+          this.repertoryAll = Repertory;
+          // 去掉数组中重复的,用于在网页中显示规格
+          this.is_state_list = this.deteleObject(
+            this.is_state_list,
+            "is_state"
+          );
+          this.size_list = this.deteleObject(this.size_list, "size");
+          this.style_list = this.deteleObject(this.style_list, "style");
+          this.fruit_list = this.deteleObject(this.fruit_list, "fruit");
+          this.else_message_list = this.deteleObject(
+            this.else_message_list,
+            "else_message"
+          );
+
+          // 需要的数据格式
+          this.spec_lists.difference = spec;
+          this.myList(this.size_list, "尺寸", "size");
+          this.myList(this.is_state_list, "状态", "is_state");
+          this.myList(this.style_list, "款式", "style");
+          this.myList(this.fruit_list, "水果", "fruit");
+          // difference 需要的格式是  size,is_state,style,fruit,else_message
+          for (var i in this.spec_lists.difference) {
+            this.shopItemInfo[
+              this.spec_lists.difference[i].difference
+            ] = this.spec_lists.difference[i]; //修改数据结构格式，改成键值对的方式，以方便和选中之后的值进行匹配
+          }
+          this.checkItem();
         });
+    },
+    // 去除数组里重复的有重复名称的对象
+    deteleObject(arr, name) {
+      var hash = {};
+      return arr.reduce(function(item, next) {
+        hash[next[name]] ? "" : (hash[next[name]] = true && item.push(next));
+        return item;
+      }, []);
+    },
+    // 后台拿到的规格数据转成需要的数据格式
+    myList(Arr, Name, Spec) {
+      if (Arr != "") {
+        var length = this.spec_lists.specifications.length;
+        var list = (this.spec_lists.specifications[length] = {
+          name: "",
+          item: []
+        });
+        for (var i = 0; i < Arr.length; i++) {
+          list.name = Name;
+          list.item[i] = {};
+          list.item[i].name = Arr[i][Spec];
+        }
+      }
     },
     // 点击出现选择规格
     Select() {
       this.show_spec = true;
+      var selectArr = this.selectArr;
+      var shopItemInfo = this.shopItemInfo;
+      // 如果为登陆状态 加入购物车
+      var uid = sessionStorage.getItem("uid");
+      if (uid != undefined) {
+        // 选中的规格
+        var name = selectArr.toString();
+        // 拿到对象的属性名
+        var obj_name = Object.keys(shopItemInfo);
+        for (var key of obj_name) {
+          if (name == key) {
+            // console.log(key);
+            // 该商品的规格  shopItemInfo[key].sid
+            var sid = shopItemInfo[key].sid;
+            console.log(123);
+            this.axios
+              .post(
+                "/cart/add_cart",
+                `user_id=${uid}&product_id=${this.pid}&sid=${sid}&count=${this.number}`
+              )
+              .then(result => {
+                console.log(result);
+              });
+          }
+        }
+      } else {
+        console.log("没有登录");
+      }
     },
     // 点击遮罩层退出选择规格选择
     Cancel() {
       this.show_spec = false;
+    },
+    // 点击选中规格后变成选中状态
+    selectState(item, i, index) {
+      // console.log(item, i, index);
+      if (this.selectArr[i] != item) {
+        this.selectArr[i] = item;
+        this.subIndex[i] = index;
+      } else {
+        this.selectArr[i] = "";
+        this.subIndex[i] = -1; //去掉选中的颜色
+      }
+      this.checkItem();
+    },
+    checkItem() {
+      var self = this;
+      var option = self.spec_lists.specifications;
+      var result = []; //定义数组存储被选中的值
+      for (var i in option) {
+        result[i] = self.selectArr[i] ? self.selectArr[i] : "";
+      }
+      for (var i in option) {
+        var last = result[i]; //把选中的值存放到字符串last去
+        for (var k in option[i].item) {
+          result[i] = option[i].item[k].name; //赋值，存在直接覆盖，不存在往里面添加name值
+          option[i].item[k].isShow = self.isMay(result); //在数据里面添加字段isShow来判断是否可以选择
+        }
+        result[i] = last; //还原，目的是记录点下去那个值，避免下一次执行循环时避免被覆盖
+      }
+      self.$forceUpdate(); //重绘
+    },
+    isMay: function(result) {
+      // console.log(result);
+      for (var i in result) {
+        if (result[i] == "") {
+          return true; //如果数组里有为空的值，那直接返回true
+        }
+      }
+      return this.shopItemInfo[result].repertory == 0 ? false : true; //匹配选中的数据的库存，若不为空返回true反之返回false
+    },
+    // 数量的加减
+    addNum(i) {
+      if (i == -1 && num == 1) {
+        this.number = 1;
+      } else {
+        this.number += i;
+      }
     }
   },
   watch: {
     $route() {
+      // 清空前一次的值
+      // 尺寸的数据
+      this.size_list = [];
+      // 状态的数据
+      this.is_state_list = [];
+      // 款式的数据
+      this.style_list = [];
+      // 水果的数据
+      this.fruit_list = [];
+      // 其他规格数据
+      this.else_message_list = [];
+      this.spec_lists = {
+        difference: [],
+        specifications: []
+      };
+      this.selectArr = []; //存放被选中的值
+      this.shopItemInfo = {}; //存放要和选中的值进行匹配的数据
+      this.subIndex = [];
+      this.show_spec = false;
       this.load();
     }
   }
 };
 </script>
 <style scoped>
-.fanhui {
-  font-size: 24px;
-  text-align: center;
-  margin-top: 10px;
-}
 .fanhui::before {
   content: "<";
+  /* display: inline-block; */
   font-size: 25px;
   float: left;
   margin-left: 10px;
@@ -278,6 +397,23 @@ export default {
 }
 img {
   width: 100%;
+  height: 100%;
+}
+.largeImg {
+  width: 100%;
+  height: 350px;
+  margin: 0.25rem 0;
+}
+.toCart {
+  background: #f5f5f5;
+  text-align: center;
+  border-radius: 50%;
+  height: 1rem;
+  width: 1rem;
+  line-height: 1rem;
+  position: fixed;
+  right: 0.6rem;
+  top: 1.8rem;
 }
 i {
   font-style: normal;
@@ -298,7 +434,7 @@ i {
 }
 .intro .fengxiang {
   text-align: center;
-  margin: 0 0.4rem 0 0;
+  margin: 0.4rem 0.4rem 0 0;
   float: right;
 }
 .intro .fengxiang p {
@@ -505,5 +641,13 @@ i {
 .spec_active {
   background-color: #fe7951;
   border-color: #fe7951 !important;
+  color: #fff;
+}
+.noneActive {
+  background-color: #ccc;
+  border-color: #ccc !important;
+  color: #fff;
+  /* 阻止点击事件 */
+  pointer-events: none;
 }
 </style>

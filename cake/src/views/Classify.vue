@@ -21,10 +21,10 @@
       <cube-scroll ref="scroll">
         <ul>
           <li v-for="(elem,i) in right_list" :key="i">
-            <a href v-if="elem.series!='NULL'">
+            <router-link :to="`List/${elem.cid}`" v-if="elem.series!='NULL'">
               <img src="images/1.png" />
               <span v-text="elem.series"></span>
-            </a>
+            </router-link>
           </li>
         </ul>
       </cube-scroll>
@@ -40,13 +40,14 @@ export default {
       defaultResult: ["蛋糕", "123", "1", "124567"],
       left_list: {},
       right_list: [],
-      selectedLabel: ""
+      selectedLabel: "",
     };
   },
   created() {
     // 请求数据
     this.axios.get("/product/classify").then(result => {
       var data = result.data.data;
+      // this.list=data;
       // 请求回来的数据格式不是我想要的数据格式要转成:
       // left_list: {蛋糕:[{name:"蛋糕",pic:"images/1.jspg"},...],...,...,}
       var obj_list = {};
@@ -67,11 +68,12 @@ export default {
         }
       }
       this.left_list = obj_list;
-      console.log(obj_list)
+      // console.log(obj_list)
       // 加载第一个区域 左侧类名
       this.selectedLabel = Object.keys(this.left_list)[0];
       // 加载第一个区域 右侧系列
       this.right_list = this.left_list[this.selectedLabel];
+
     });
   },
   methods: {

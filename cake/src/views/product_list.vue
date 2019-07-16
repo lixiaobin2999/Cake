@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="caption">
-      <i class="iconfont">&#xe732;</i>
+      <i class="iconfont" @click="$router.push('/Index')">&#xe732;</i>
       <h1 class="caption-info">商品列表</h1>
     </div>
     <div class="mysearch">
@@ -29,74 +29,45 @@
     </ul>
     <div style="height:0.2rem;background:#bbb;opacity:0.3;"></div>
     <div class="proList">
-      <div class="pro-item">
-        <img src="images/product/64sd78f5465sda417.jpg" alt />
+      <router-link :to="`/Details/${item.pid}`" class="pro-item" v-for="(item,i) of product_list" :key="i" >
+        <img :src="`http://127.0.0.1:7700/${item.pic}`" alt />
         <p class="repertory">
-          <i class="iconfont">&#xe661;</i> 138
+          <i class="iconfont">&#xe661;</i> <span v-text="item.read_num"></span>
         </p>
-        <h4 class="pName">曲奇(200g)</h4>
-        <span class="price">￥48.00</span>
-        <span class="volume">已售12件</span>
-      </div>
-      <div class="pro-item">
-        <img src="images/product/64sd78f5465sda417.jpg" alt />
-        <p class="repertory">
-          <i class="iconfont">&#xe661;</i> 138
-        </p>
-        <h4 class="pName">曲奇(200g)</h4>
-        <span class="price">￥48.00</span>
-        <span class="volume">已售12件</span>
-      </div>
-      <div class="pro-item">
-        <img src="images/product/64sd78f5465sda417.jpg" alt />
-        <p class="repertory">
-          <i class="iconfont">&#xe661;</i> 138
-        </p>
-        <h4 class="pName">曲奇(200g)</h4>
-        <span class="price">￥48.00</span>
-        <span class="volume">已售12件</span>
-      </div>
-      <div class="pro-item">
-        <img src="images/product/64sd78f5465sda417.jpg" alt />
-        <p class="repertory">
-          <i class="iconfont">&#xe661;</i> 138
-        </p>
-        <h4 class="pName">曲奇(200g)</h4>
-        <span class="price">￥48.00</span>
-        <span class="volume">已售12件</span>
-      </div>
-      <div class="pro-item">
-        <img src="images/product/64sd78f5465sda417.jpg" alt />
-        <p class="repertory">
-          <i class="iconfont">&#xe661;</i> 138
-        </p>
-        <h4 class="pName">曲奇(200g)</h4>
-        <span class="price">￥48.00</span>
-        <span class="volume">已售12件</span>
-      </div>
-      <div class="pro-item">
-        <img src="images/product/64sd78f5465sda417.jpg" alt />
-        <p class="repertory">
-          <i class="iconfont">&#xe661;</i> 138
-        </p>
-        <h4 class="pName">曲奇(200g)</h4>
-        <span class="price">￥48.00</span>
-        <span class="volume">已售12件</span>
-      </div>
-      <div class="pro-item">
-        <img src="images/product/64sd78f5465sda417.jpg" alt />
-        <p class="repertory">
-          <i class="iconfont">&#xe661;</i> 138
-        </p>
-        <h4 class="pName">曲奇(200g)</h4>
-        <span class="price">￥48.00</span>
-        <span class="volume">已售12件</span>
-      </div>
+        <h4 class="pName" v-text="item.pname"></h4>
+        <span class="price" v-text="`￥${item.price}`"></span>
+        <span class="volume" v-text="`已售${item.sales_volume}件`"></span>
+      </router-link>
     </div>
   </div>
 </template>
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      product_list: []
+    };
+  },
+  props: ["cid"],
+  methods: {
+    load() {
+      var cid = this.cid;
+      this.axios.get("/index/index", { params: { cid: cid } }).then(result => {
+        console.log(result.data.data);
+        var list = result.data.data;
+
+        this.carousel_list = list.carousel;
+        this.product_list = list.product;
+      });
+    }
+  },
+  created() {this.load()},
+  watch: {
+    $route() {
+      this.load();
+    }
+  }
+};
 </script>
 <style scoped>
 /* 头部 */
@@ -145,7 +116,7 @@ export default {};
   font-size: 0.45rem;
   position: relative;
 }
-.order li span.active{
+.order li span.active {
   color: #ed143d;
 }
 .order li .add {
@@ -179,7 +150,8 @@ export default {};
   margin-bottom: 0.12rem;
 }
 .proList .pro-item img {
-  width: 100%;
+  width: 4.95rem;
+  height: 4.95rem;
 }
 .repertory {
   width: 100%;

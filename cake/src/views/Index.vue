@@ -74,7 +74,7 @@
             <!-- 小食 -->
             <div class="snack-list clearfix">
               <span class="snack-title">小食</span>
-              <router-link to="###" class="product-more">更多&gt;</router-link>
+              <router-link :to="`List/${cid}`" class="product-more">更多&gt;</router-link>
             </div>
             <div class="snack-list clearfix" style="margin-bottom: 15px;">
               <ul class="mylist">
@@ -137,7 +137,8 @@ export default {
       // 轮播图的数据
       carousel_list: [],
       // 首页显示某个系列的商品数据
-      product_list: []
+      product_list: [],
+      cid:7
     };
   },
   created() {
@@ -149,7 +150,7 @@ export default {
       this.resizeHeight = screen.availHeight;
     });
     // 获取后台数据显示 需要传入某系列的cid
-    var cid = 7;
+    var cid = this.cid;
     this.axios.get("/index/index", { params: { cid: cid } }).then(result => {
       // console.log(result.data.data);
       var list = result.data.data;

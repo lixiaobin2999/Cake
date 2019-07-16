@@ -22,7 +22,7 @@ router.get("/index", (req, res) => {
     if (err) throw err;
     output.carousel = result;
     // 获取首页商品信息
-    var sql2 = `SELECT cname,series,pid,pname,price,cake_product.pic,read_num 
+    var sql2 = `SELECT cname,series,sales_volume,pid,pname,price,cake_product.pic,read_num 
                 FROM cake_catalogue INNER JOIN cake_product ON 
                 cake_catalogue.cid=? AND cake_product.cid=?`;
     pool.query(sql2, [cid, cid], (err, result) => {

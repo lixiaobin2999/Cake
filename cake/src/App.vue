@@ -21,6 +21,7 @@ export default {
 <style >
 @import "./assets/iconfont/iconfont.css";
 @import "./assets/iconfont/iconfont2.css";
+@import "./assets/iconfont/iconfont3.css";
 </style>
 <style>
 </style>
