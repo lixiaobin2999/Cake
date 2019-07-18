@@ -1,4 +1,4 @@
-<template >
+<template>
   <div class="page-navbar">
     <mt-navbar class="page-part" v-model="selected">
       <mt-tab-item id="1">
@@ -9,7 +9,7 @@
       </mt-tab-item>
     </mt-navbar>
     <mt-tab-container v-model="selected">
-      <mt-tab-container-item id="1">
+      <mt-tab-container-item class="box" id="1">
         <div class="site">
           <span>请选择收货地址</span>
           <span class="right">&gt;</span>
@@ -42,7 +42,7 @@
         <div class="method">
           <span class="pay">
             <span>支付方式</span>
-            <span class="right">请选择&nbsp;&gt;</span>
+            <span class="right">微信支付&nbsp;&gt;</span>
           </span>
           <span>
             <span>运费</span>
@@ -50,7 +50,48 @@
           </span>
         </div>
       </mt-tab-container-item>
-      <mt-tab-container-item id="2"></mt-tab-container-item>
+      <mt-tab-container-item class="box" id="2">
+        <div class="contact">
+          <mt-field class="pro" label="收货人：" placeholder="可以手动填写"></mt-field>
+          <mt-field class="phone" label="联系电话：" placeholder="可以手动填写"></mt-field>
+        </div>
+        <div class="myshop">
+          <span>门店名称：××蛋糕</span>
+          <span>门店电话：0000-00000000</span>
+          <span
+            class="line_height"
+          >配送门店：1.地址：越秀区侨光路8号华厦大厦B座7楼达内&nbsp;2.营业时间：8:30-18:00 每周一至周五公休。3.蛋糕预约三年起，请填写预约时间。</span>
+          <span class="attention">*自提订单请去以上门店提货</span>
+        </div>
+        <div class="sub">
+          <span class="noborder">预约专用</span>
+          <div @click="showDateTimePicker">
+            <i>*&nbsp;</i>
+            <span>预&nbsp;约&nbsp;日&nbsp;期</span>
+            <span class="right">{{time}}&nbsp;&gt;</span>
+          </div>
+          <mt-field label="备注："></mt-field>
+        </div>
+        <div class="product">
+          <img src="../../public/images/product/64sd78f5465sda41105.jpg" alt />
+          <span class="product_details">
+            <span class="product_title">提拉米苏</span>
+            <span>尺寸：8寸</span>
+            <span>×1</span>
+          </span>
+          <span class="price">￥268</span>
+        </div>
+        <div class="method">
+          <span class="pay">
+            <span>支付方式</span>
+            <span class="right">微信支付&nbsp;&gt;</span>
+          </span>
+          <span>
+            <span>运费</span>
+            <span class="right attention">包邮</span>
+          </span>
+        </div>
+      </mt-tab-container-item>
     </mt-tab-container>
     <div class="bottom">
       <span class="money">总计：¥268</span>
@@ -74,16 +115,29 @@ export default {
     var date = time.getDate();
     var current = year + "-" + month + "-" + date;
     var hours = time.getHours();
-    var minutes =time.getMinutes() < 10 ? "0" + time.getMinutes() : time.getMinutes();
-    var second =time.getSeconds() < 10 ? "0" + time.getSeconds() : time.getSeconds();
-    this.time =year +"-" +month +"-" +date +" " +hours +":" +minutes +":" +second;
+    var minutes =
+      time.getMinutes() < 10 ? "0" + time.getMinutes() : time.getMinutes();
+    var second =
+      time.getSeconds() < 10 ? "0" + time.getSeconds() : time.getSeconds();
+    this.time =
+      year +
+      "-" +
+      month +
+      "-" +
+      date +
+      " " +
+      hours +
+      ":" +
+      minutes +
+      ":" +
+      second;
   },
   methods: {
     showDateTimePicker() {
       if (!this.dateTimePicker) {
         this.dateTimePicker = this.$createDatePicker({
           title: "预约日期",
-          min: new Date(2019, 7, 8, 8, 0, 0),
+          min: new Date(2019, 0, 1, 1, 0, 0),
           max: new Date(2020, 7, 1, 1, 0, 0),
           value: new Date(),
           columnCount: 6,
@@ -91,9 +145,17 @@ export default {
           onCancel: this.cancelHandle
         });
       }
+
       this.dateTimePicker.show();
     },
     selectHandle(date, selectedVal, selectedText) {
+      // this.$createDialog({
+      //   type: "warn",
+      //   content: `Selected Item: <br/> - date: ${date} <br/> - value: ${selectedVal.join(
+      //     ", "
+      //   )} <br/> - text: ${selectedText.join(" ")}`,
+      //   icon: "cubeic-alert"
+      // }).show();
       this.time =
         selectedText[0] +
         "-" +
@@ -107,15 +169,32 @@ export default {
         ":" +
         selectedText[5];
     }
+    // cancelHandle() {
+    //   this.$createToast({
+    //     type: "correct",
+    //     txt: "Picker canceled",
+    //     time: 1000
+    //   }).show();
+    // }
   }
 };
 </script>
-<style>
+<style scoped>
 body {
   background: #f9f9f9;
 }
+/* .page-navbar {
+} */
 .page-part {
   border-bottom: 1px solid #ccc;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1;
+}
+.box {
+  margin-bottom: 55px;
+  margin-top: 50px;
 }
 .page-navbar .mint-tab-item-label {
   font-size: 16px;
@@ -137,6 +216,18 @@ body {
   background-color: #fff;
   padding: 0 10px 0 10px;
 }
+.contact {
+  display: block;
+  height: 95px;
+  font-size: 16px;
+  margin-top: 2px;
+  color: #3e3e3e;
+  line-height: 30px;
+  background-color: #fff;
+  padding: 0 10px 0 10px;
+  border-bottom: 1px solid #ccc;
+}
+
 .myshop {
   /* line-height: 35px; */
   margin-top: 10px;
@@ -144,6 +235,7 @@ body {
   color: #3e3e3e;
   padding: 5px 10px 0 10px;
   font-size: 14px;
+  border-bottom: 1px solid #ccc;
 }
 .myshop span {
   display: block;
@@ -153,12 +245,16 @@ body {
 .line_height {
   line-height: 17px;
 }
+.attention {
+  color: #e1465b;
+}
 .sub {
   display: block;
   background-color: #fff;
   color: #3e3e3e;
   padding: 0 10px 0 10px;
   margin-top: 10px;
+  border-bottom: 1px solid #ccc;
 }
 .sub > span {
   display: block;
@@ -236,6 +332,7 @@ body {
   position: fixed;
   bottom: 0;
   padding: 0px 10px 0 10px;
+  background-color: #fff;
 }
 .money {
   display: inline-block;

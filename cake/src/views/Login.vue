@@ -1,5 +1,9 @@
-<template >
+<template>
   <div class="page-navbar">
+    <p class="return_text" @click="$router.push('/Own')">
+      <i class="iconfont return">&#xe732;</i>
+      <!-- <span>返回</span> -->
+    </p>
     <mt-navbar class="page-part" v-model="selected">
       <mt-tab-item id="1">注册</mt-tab-item>
       <mt-tab-item id="2">登录</mt-tab-item>
@@ -90,7 +94,43 @@ export default {
         //验证码的长度
         var codeLength = 4;
         //随机数
-        var random = new Array(0,1,2,3,4,5,6,7,8,9,"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"
+        var random = new Array(
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          "A",
+          "B",
+          "C",
+          "D",
+          "E",
+          "F",
+          "G",
+          "H",
+          "I",
+          "J",
+          "K",
+          "L",
+          "M",
+          "N",
+          "O",
+          "P",
+          "Q",
+          "R",
+          "S",
+          "T",
+          "U",
+          "V",
+          "W",
+          "X",
+          "Y",
+          "Z"
         );
         for (var i = 0; i < codeLength; i++) {
           //取得随机数的索引（0~35）
@@ -185,5 +225,15 @@ export default {
   position: absolute;
   left: 0;
   top: 50%;
+}
+.iconfont.return {
+  font-size: 25px;
+  margin-left: 20px;
+  margin-top: 20px;
+  vertical-align:bottom
+}
+ .return_text span {
+  font-size: 18px;
+  vertical-align:middle
 }
 </style>

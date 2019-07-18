@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="caption">
-      <i class="iconfont" @click="$router.push('/Index')">&#xe732;</i>
+      <i class="iconfont" @click="$router.go(-1)">&#xe732;</i>
       <h1 class="caption-info">商品列表</h1>
     </div>
     <div class="mysearch">
@@ -29,15 +29,18 @@
     </ul>
     <div style="height:0.2rem;background:#bbb;opacity:0.3;"></div>
     <div class="proList">
-      <router-link :to="`/Details/${item.pid}`" class="pro-item" v-for="(item,i) of product_list" :key="i" >
-        <img :src="`http://127.0.0.1:7700/${item.pic}`" alt />
-        <p class="repertory">
-          <i class="iconfont">&#xe661;</i> <span v-text="item.read_num"></span>
-        </p>
-        <h4 class="pName" v-text="item.pname"></h4>
-        <span class="price" v-text="`￥${item.price}`"></span>
-        <span class="volume" v-text="`已售${item.sales_volume}件`"></span>
-      </router-link>
+      <div class="pro-item" v-for="(item,i) of product_list" :key="i">
+        <router-link :to="`/Details/${item.pid}`" style="position:relative;">
+          <img :src="`http://127.0.0.1:7700/${item.pic}`" alt />
+          <p class="repertory">
+            <i class="iconfont">&#xe661;</i>&nbsp;
+            <span v-text="item.read_num"></span>
+          </p>
+          <h4 class="pName" v-text="item.pname"></h4>
+          <span class="price" v-text="`￥${item.price}`"></span>
+          <span class="volume" v-text="`已售${item.sales_volume}件`"></span>
+        </router-link>
+      </div>
     </div>
   </div>
 </template>
@@ -52,16 +55,23 @@ export default {
   methods: {
     load() {
       var cid = this.cid;
-      this.axios.get("/index/index", { params: { cid: cid } }).then(result => {
-        console.log(result.data.data);
-        var list = result.data.data;
-
-        this.carousel_list = list.carousel;
-        this.product_list = list.product;
-      });
+      this.axios
+        .get("/product/series", { params: { cid: cid } })
+        .then(result => {
+          // console.log(result.data.data);
+          if (result.data.code == 200) {
+            this.product_list = result.data.data;
+          } else {
+            this.$messagebox("", "没有该系列商品").then(action => {
+              this.$router.push("/Index");
+            });
+          }
+        });
     }
   },
-  created() {this.load()},
+  created() {
+    this.load();
+  },
   watch: {
     $route() {
       this.load();
@@ -122,7 +132,7 @@ export default {
 .order li .add {
   position: absolute;
   right: -15px;
-  top: -6px;
+  top: -0.17rem;
   opacity: 0.5;
 }
 .order li .add:before {
@@ -133,7 +143,7 @@ export default {
   position: absolute;
   right: -15px;
   opacity: 0.5;
-  top: 4px;
+  top: 0.14rem;
 }
 .order li .cut:before {
   content: "\25Bc";
@@ -145,6 +155,7 @@ export default {
   justify-content: space-between;
 }
 .proList .pro-item {
+  position: relative;
   width: 49.5%;
   background: rgba(239, 239, 239, 0.9);
   margin-bottom: 0.12rem;
@@ -157,10 +168,12 @@ export default {
   width: 100%;
   font-size: 0.43rem;
   padding: 0.1rem 0;
-  background: #ccc;
   color: #fff;
   margin-top: -0.13rem;
   text-indent: 0.2rem;
+  position: absolute;
+  bottom: 0.13rem;
+  background: rgba(204, 204, 204, 0.8);
 }
 .pro-item .pName {
   font-size: 0.43rem;

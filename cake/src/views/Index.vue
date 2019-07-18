@@ -1,14 +1,14 @@
-<template >
+<template>
   <div>
     <div>
       <mt-tab-container v-model="active">
         <!-- 首页 -->
         <mt-tab-container-item id="myIndex">
-          <div class="myIndexBotton" style="text-align:center;width:100%">
-            <h1 style="margin:10px auto">首页</h1>
+          <div class="myIndexBotton" style="text-align: center;;width:100%">
             <!-- 搜索 -->
-            <div class="mySearch">
-              <mt-search autofocus></mt-search>
+            <div class="my_search">
+              <span class="iconfont sousuo" @click.native="$router.push('/Search')">&#xe65f;&nbsp;搜索</span>
+              <div style="background:#ddd;height:1px;width:100%;margin:12px 0"></div>
             </div>
             <!-- 产品导航 -->
             <div class="product-nav">
@@ -74,7 +74,7 @@
             <!-- 小食 -->
             <div class="snack-list clearfix">
               <span class="snack-title">小食</span>
-              <router-link :to="`List/${cid}`" class="product-more">更多&gt;</router-link>
+              <router-link :to="`/ProductList/${cid}`" class="product-more">更多&gt;</router-link>
             </div>
             <div class="snack-list clearfix" style="margin-bottom: 15px;">
               <ul class="mylist">
@@ -104,6 +104,7 @@
           <own></own>
         </mt-tab-container-item>
       </mt-tab-container>
+
       <!-- 底部 -->
       <mt-tabbar v-model="active" fixed>
         <mt-tab-item id="myIndex">
@@ -124,6 +125,8 @@
   </div>
 </template>
 <script>
+// 导入eventBus 兄弟之间通信
+import { eventBus } from "../eventBus.js";
 // 导入需要的子组件(分类,购物车,个人中心)
 import Classify from "./Classify.vue";
 import Cart from "./Cart";
@@ -138,17 +141,33 @@ export default {
       carousel_list: [],
       // 首页显示某个系列的商品数据
       product_list: [],
-      cid:7
+      // 某个系列下的id
+      cid: 7
     };
   },
+  // props: ["old_active"],
   created() {
     // 有其他页面返回到首页时,去到特定的页面
-    // if(this)
+    // console.log(this)
+    // console.log("1:" + this.active);
+    // var index = this;
+    // index.eventBus.$on("activeState", data => {
+    //   //index._data.active = active;
+    //   // index._data.active = active;
+    //   console.log(index.active);
+    //   console.log((this.active = data));
+    //   //var active = this.active;
+    //   // console.log(this.active);
+    // });
+    // console.log(index.active);
+    //console.log(1);
+
     // 屏幕可用区域变化时执行 (分类的高度需要与屏幕高度一样)
     this.resizeHeight = screen.availHeight;
     window.addEventListener("resize", () => {
       this.resizeHeight = screen.availHeight;
     });
+
     // 获取后台数据显示 需要传入某系列的cid
     var cid = this.cid;
     this.axios.get("/index/index", { params: { cid: cid } }).then(result => {
@@ -167,11 +186,35 @@ export default {
   methods: {
     detail() {
       this.active = "myProduct";
+    },
+    select_active: function(bool) {
+      this.active = bool;
+      console.log(bool);
+    }
+  },
+  watch: {
+    active() {
+      // console.log(123)
     }
   }
 };
 </script>
 <style scope>
+body{background: #fff}
+.my_search {
+  width: 92%;
+  margin: 12px auto;
+  background: #fff;
+}
+.sousuo {
+  display: block;
+  border: 1px solid #5555;
+  border-radius: 5px;
+  color: #ccc;
+  background-color: #fff;
+  font-size: 15px;
+  line-height: 32px;
+}
 .clearfix::before {
   content: "";
   clear: both;
@@ -199,6 +242,7 @@ img {
   display: block;
   font-size: 1rem;
   margin-bottom: 0.2rem;
+  opacity: 0.5;
 }
 .product-nav .list-nav span.list-menu {
   font-size: 0.35rem;
@@ -270,8 +314,8 @@ img {
   width: 100%;
 }
 .mylist > li {
-  width: 33.3%;
-  margin-bottom: 3px;
+  width: 33%;
+  margin-bottom: 0.2rem;
 }
 /* 图片 */
 .snack-item img {
@@ -297,7 +341,7 @@ img {
   text-align: left;
 }
 .snack-item span {
-  margin: 0.12rem 0;
+  margin: 0.12rem 0 0 0;
   font-weight: 600;
   white-space: pre-wrap;
   font-size: 0.4rem;
@@ -305,7 +349,6 @@ img {
 }
 .snack-item .title {
   display: inline-block;
-  text-align: left;
   color: #333;
   height: 32px;
 }
@@ -313,19 +356,17 @@ img {
   color: crimson;
 }
 /* 搜索框的高 */
-.mySearch {
-  height: 52px;
-}
+
 .mint-searchbar {
   background-color: #efeff4 !important;
 }
 /* 取消的文字样式 */
-.mySearch .mint-searchbar-cancel {
+.my_search .mint-searchbar-cancel {
   font-size: 14px !important;
   color: #000 !important;
 }
 /* 搜索框的文字样式 */
-.mySearch .mint-searchbar-core {
+.my_search .mint-searchbar-core {
   font-size: 14px !important;
 }
 /* 底部icon图标 */

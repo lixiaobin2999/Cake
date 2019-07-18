@@ -1,12 +1,14 @@
-<template >
+<template>
   <div>
+    <h1 class="fenlei_title">分&nbsp;类</h1>
     <div class="mySearch">
       <!-- 点击搜索框后要跳到一个新的组件页面 -->
-      <mt-search autofocus v-model="value" :result="filterResult"></mt-search>
+      <mt-search autofocus cancel-text v-model="value" :result="filterResult"></mt-search>
     </div>
+    <!-- <h1>dsadsa</h1> -->
     <!-- 左侧边栏 -->
     <div class="let-tabbar">
-      <div class ="left-panel">
+      <div class="left-panel">
         <cube-scroll>
           <cube-tab-bar
             v-model="selectedLabel"
@@ -21,7 +23,7 @@
       <cube-scroll ref="scroll">
         <ul>
           <li v-for="(elem,i) in right_list" :key="i">
-            <router-link :to="`List/${elem.cid}`" v-if="elem.series!='NULL'">
+            <router-link :to="`/ProductList/${elem.cid}`" v-if="elem.series!='NULL'">
               <img src="images/1.png" />
               <span v-text="elem.series"></span>
             </router-link>
@@ -40,20 +42,20 @@ export default {
       defaultResult: ["蛋糕", "123", "1", "124567"],
       left_list: {},
       right_list: [],
-      selectedLabel: "",
+      selectedLabel: ""
     };
   },
   created() {
     // 请求数据
     this.axios.get("/product/classify").then(result => {
+      // console.log(result.data.msg);
       var data = result.data.data;
-      // this.list=data;
       // 请求回来的数据格式不是我想要的数据格式要转成:
       // left_list: {蛋糕:[{name:"蛋糕",pic:"images/1.jspg"},...],...,...,}
       var obj_list = {};
       var obj_name = [];
       for (var i = 0; i < data.length; i++) {
-        // 如果这个对象名里没有东西就赋值为一个空数组
+        // 如果这个对象名里没有东西就强行赋值为一个空数组
         if (obj_list[data[i].cname] == undefined) {
           obj_list[data[i].cname] = [];
         }
@@ -62,25 +64,21 @@ export default {
         // 如果对象的属性名和数据里的分类名称一样就放进该对象里的数组里
         for (var name of obj_name) {
           if (name == data[i].cname) {
-            console.log(data[i].cname)
             obj_list[name].push(data[i]);
           }
         }
       }
       this.left_list = obj_list;
-      // console.log(obj_list)
-      // 加载第一个区域 左侧类名
+      // console.log(this.left_list)
+      // 加载第一个区域
       this.selectedLabel = Object.keys(this.left_list)[0];
-      // 加载第一个区域 右侧系列
       this.right_list = this.left_list[this.selectedLabel];
-
     });
   },
   methods: {
     changeHandler(label) {
       // 点击左边后换到别的区域
       this.right_list = this.left_list[label];
-        console.log(this.left_list[label])
       // console.log(this.right_list);
     }
   },
@@ -99,10 +97,11 @@ export default {
   }
 };
 </script>
-<style lang="stylus" rel="stylesheet/stylus">
+<style lang="stylus" rel="stylesheet/stylus" >
 /* 搜索框的高 */
 .mySearch {
   height: 52px;
+  margin-top: 36px;
 }
 
 .mint-searchbar {
@@ -128,6 +127,7 @@ export default {
   bottom: 0;
   width: 100px;
   background-color: #f9f9f9;
+  margin-top: 36px;
 }
 
 .cube-scroll-list-wrapper {
@@ -163,6 +163,7 @@ export default {
   right: 0;
   bottom: 0;
   background-color: #f9f9f9;
+  margin-top: 36px;
 
   ul {
     position: fixed;
@@ -196,6 +197,23 @@ export default {
       color: #555;
     }
   }
+}
+
+.fenlei_title {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  text-align: center;
+  /* display: block; */
+  color: #303030;
+  height: 30px;
+  /* font-weight: bold; */
+  background: #ffffff;
+  line-height: 30px;
+  padding: 3px 0 3px 0;
+  font-size: 22px;
+  z-index: 999;
+  font-family: '苹方黑体';
 }
 </style>
 
