@@ -30,14 +30,18 @@
           </div>
           <mt-field label="备注："></mt-field>
         </div>
-        <div class="product">
-          <img src="../../public/images/product/64sd78f5465sda41105.jpg" alt />
+        <div class="product" v-for="(item,index) of list" :key="index">
+          <img :src="`http://kirito7.applinzi.com/${item.pic}`" alt />
+          <span class="product_title" v-text="item.pname"></span>
           <span class="product_details">
-            <span class="product_title">提拉米苏</span>
-            <span>尺寸：8寸</span>
-            <span>×1</span>
+            <span :class="{none:item.is_state=='-1'}" v-text="`状态:\n${item.is_state}`"></span>
+            <span :class="{none:item.size==null}" v-text="`尺寸:\n${item.size}`"></span>
+            <span :class="{none:item.fruit==null}" v-text="`水果:\n${item.fruit}`"></span>
+            <span :class="{none:item.else_message==null}" v-text="`套餐:\n${item.else_message}`"></span>
+            <span :class="{none:item.style==null}" v-text="`款式:\n${item.style}`"></span>
           </span>
-          <span class="price">￥268</span>
+          <span class="jiesuan_shuliang" v-text="`×${item.count}`"></span>
+          <span class="price" v-text="`¥${item.price}`"></span>
         </div>
         <div class="method">
           <span class="pay">
@@ -50,6 +54,7 @@
           </span>
         </div>
       </mt-tab-container-item>
+
       <mt-tab-container-item class="box" id="2">
         <div class="contact">
           <mt-field class="pro" label="收货人：" placeholder="可以手动填写"></mt-field>
@@ -72,14 +77,18 @@
           </div>
           <mt-field label="备注："></mt-field>
         </div>
-        <div class="product">
-          <img src="../../public/images/product/64sd78f5465sda41105.jpg" alt />
+        <div class="product" v-for="(item,index) of list" :key="index">
+          <img :src="`http://kirito7.applinzi.com/${item.pic}`" alt />
+          <span class="product_title" v-text="item.pname"></span>
           <span class="product_details">
-            <span class="product_title">提拉米苏</span>
-            <span>尺寸：8寸</span>
-            <span>×1</span>
+            <span :class="{none:item.is_state=='-1'}" v-text="`状态:\n${item.is_state}`"></span>
+            <span :class="{none:item.size==null}" v-text="`尺寸:\n${item.size}`"></span>
+            <span :class="{none:item.fruit==null}" v-text="`水果:\n${item.fruit}`"></span>
+            <span :class="{none:item.else_message==null}" v-text="`套餐:\n${item.else_message}`"></span>
+            <span :class="{none:item.style==null}" v-text="`款式:\n${item.style}`"></span>
           </span>
-          <span class="price">￥268</span>
+          <span class="jiesuan_shuliang" v-text="`×${item.count}`"></span>
+          <span class="price" v-text="`¥${item.price}`"></span>
         </div>
         <div class="method">
           <span class="pay">
@@ -105,7 +114,31 @@ export default {
     return {
       selected: "1",
       pickerValue: "",
-      time: ""
+      time: "",
+      list: [
+        {
+          pic: "images/product/64sd78f5465sda4110.jpg",
+          pname: "提拉米苏",
+          is_state: "-1",
+          size: "5寸",
+          fruit: "芒果",
+          else_message: null,
+          style: null,
+          count: 1,
+          price: 10
+        },
+        {
+          pic: "images/product/64sd78f5465sda4110.jpg",
+          pname: "提拉米苏",
+          is_state: "-1",
+          size: "5寸",
+          fruit: "芒果",
+          else_message: null,
+          style: null,
+          count: 1,
+          price: 10
+        }
+      ]
     };
   },
   created() {
@@ -183,6 +216,9 @@ export default {
 body {
   background: #f9f9f9;
 }
+.none {
+  display: none !important;
+}
 /* .page-navbar {
 } */
 .page-part {
@@ -222,12 +258,15 @@ body {
   font-size: 16px;
   margin-top: 2px;
   color: #3e3e3e;
+  /* margin-bottom: 15px; */
   line-height: 30px;
   background-color: #fff;
   padding: 0 10px 0 10px;
   border-bottom: 1px solid #ccc;
 }
-
+.contact .pro {
+  /* border:0 !important */
+}
 .myshop {
   /* line-height: 35px; */
   margin-top: 10px;
@@ -255,6 +294,7 @@ body {
   padding: 0 10px 0 10px;
   margin-top: 10px;
   border-bottom: 1px solid #ccc;
+  margin-bottom: 10px;
 }
 .sub > span {
   display: block;
@@ -283,7 +323,7 @@ body {
   border-bottom: 1px solid #ddd;
   font-size: 14px;
   padding: 0 10px 0 10px;
-  margin-top: 10px;
+  /* margin-top: px; */
   background-color: #fff;
   color: #5558;
 }
@@ -297,20 +337,32 @@ body {
   color: #3e3e3e;
   font-size: 16px;
   margin-bottom: 5px;
+  display: inline-block;
+  line-height: 25px;
+  position: absolute;
+  top: 15px;
+  left: 120px;
 }
 .product_details {
   position: absolute;
-  top: 10px;
+  top: 43px;
   left: 110px;
+  margin-left: 5px !important;
 }
 .product_details span {
-  display: block;
+  display: inline-block;
   line-height: 25px;
+  margin-left: 5px;
+}
+.jiesuan_shuliang {
+  position: absolute;
+  top: 80px;
+  left: 120px;
 }
 .product .price {
   position: absolute;
   color: #e1465b;
-  top: 72px;
+  top: 80px;
   right: 10px;
 }
 .method {

@@ -1,13 +1,14 @@
 <template>
   <div>
     <div>
+      <div class="test"></div>
       <mt-tab-container v-model="active">
         <!-- 首页 -->
         <mt-tab-container-item id="myIndex">
           <div class="myIndexBotton" style="text-align: center;;width:100%">
             <!-- 搜索 -->
             <div class="my_search">
-              <span class="iconfont sousuo" @click.native="$router.push('/Search')">&#xe65f;&nbsp;搜索</span>
+              <span class="iconfont sousuo" @click="$router.push('/Search')">&#xe65f;&nbsp;搜索</span>
               <div style="background:#ddd;height:1px;width:100%;margin:12px 0"></div>
             </div>
             <!-- 产品导航 -->
@@ -80,7 +81,7 @@
               <ul class="mylist">
                 <li class="snack-item" v-for="(item,i) of product_list" :key="i">
                   <router-link :to="`/Details/${item.pid}`">
-                    <img :src="`http://127.0.0.1:7700/${item.pic}`" alt />
+                    <img :src="`http://kirito7.applinzi.com/${item.pic}`" alt />
                     <span class="title" v-text="item.pname"></span>
                     <span class="price" v-text="`￥${item.price}`"></span>
                   </router-link>
@@ -99,12 +100,11 @@
         <mt-tab-container-item id="myCart">
           <cart></cart>
         </mt-tab-container-item>
-        <!-- 个人中心 -->
-        <mt-tab-container-item id="me" :style="`height:${resizeHeight}px`">
+        <!-- 个人中心 :style="`height:${resizeHeight}px` -->
+        <mt-tab-container-item id="me">
           <own></own>
         </mt-tab-container-item>
       </mt-tab-container>
-
       <!-- 底部 -->
       <mt-tabbar v-model="active" fixed>
         <mt-tab-item id="myIndex">
@@ -123,7 +123,7 @@
       </mt-tabbar>
     </div>
   </div>
-</template>
+ </template>
 <script>
 // 导入eventBus 兄弟之间通信
 import { eventBus } from "../eventBus.js";
@@ -161,16 +161,14 @@ export default {
     // });
     // console.log(index.active);
     //console.log(1);
-
     // 屏幕可用区域变化时执行 (分类的高度需要与屏幕高度一样)
     this.resizeHeight = screen.availHeight;
     window.addEventListener("resize", () => {
       this.resizeHeight = screen.availHeight;
     });
-
     // 获取后台数据显示 需要传入某系列的cid
     var cid = this.cid;
-    this.axios.get("/index/index", { params: { cid: cid } }).then(result => {
+    this.axios.get("/index/index", { params: { cid: cid}}).then(result => {
       // console.log(result.data.data);
       var list = result.data.data;
       this.carousel_list = list.carousel;
@@ -200,7 +198,12 @@ export default {
 };
 </script>
 <style scope>
-body{background: #fff}
+div.test{
+  width:620px;
+}
+body {
+  background: #fff;
+}
 .my_search {
   width: 92%;
   margin: 12px auto;
@@ -214,6 +217,7 @@ body{background: #fff}
   background-color: #fff;
   font-size: 15px;
   line-height: 32px;
+  text-align: center;
 }
 .clearfix::before {
   content: "";
@@ -278,15 +282,16 @@ img {
   font-style: normal;
   display: inline-block;
   animation: translatex 7s linear infinite;
+  /* animation-play-state: paused; */
   white-space: nowrap;
 }
+.gonggao .slide i.run {
+  animation-play-state: running;
+}
+
 @keyframes translatex {
-  0% {
-    transform: translateX(0px);
-  }
-  100% {
-    transform: translateX(-620px);
-  }
+  0% {transform: translateX(0rem);}
+  100% {transform: translateX(-620px);}
 }
 /* 轮播 */
 .mint-swipe {

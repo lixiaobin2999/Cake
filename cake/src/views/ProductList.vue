@@ -2,11 +2,12 @@
   <div>
     <div class="caption">
       <i class="iconfont" @click="$router.go(-1)">&#xe732;</i>
-      <h1 class="caption-info">商品列表</h1>
+      <!-- <h1 class="caption-info">商品列表</h1> -->
     </div>
-    <div class="mysearch">
-      <input type="text" class="search" />
-      <span class="search-btn">搜索</span>
+    <!-- 搜索 -->
+    <div class="my_search">
+      <span class="iconfont sousuo" @click="$router.push('/Search')">&#xe65f;&nbsp;搜索</span>
+      <div style="background:#ddd;height:1px;width:100%;margin:12px 0"></div>
     </div>
     <ul class="order">
       <li>
@@ -31,7 +32,7 @@
     <div class="proList">
       <div class="pro-item" v-for="(item,i) of product_list" :key="i">
         <router-link :to="`/Details/${item.pid}`" style="position:relative;">
-          <img :src="`http://127.0.0.1:7700/${item.pic}`" alt />
+          <img :src="`http://kirito7.applinzi.com/${item.pic}`" alt />
           <p class="repertory">
             <i class="iconfont">&#xe661;</i>&nbsp;
             <span v-text="item.read_num"></span>
@@ -48,7 +49,8 @@
 export default {
   data() {
     return {
-      product_list: []
+      product_list: [],
+      isFirstEnter: false // 是否第一次进入，默认false
     };
   },
   props: ["cid"],
@@ -70,6 +72,7 @@ export default {
     }
   },
   created() {
+    this.isFirstEnter = true;
     this.load();
   },
   watch: {
@@ -80,6 +83,28 @@ export default {
 };
 </script>
 <style scoped>
+/* 搜索框的文字样式 */
+.my_search {
+  width: 92%;
+  margin: 12px auto;
+  background: #fff;
+}
+.my_search .mint-searchbar-cancel {
+  font-size: 14px !important;
+  color: #000 !important;
+}
+.my_search .mint-searchbar-core {
+  font-size: 14px !important;
+}
+.sousuo {
+  display: block;
+  border: 1px solid #5555;
+  border-radius: 5px;
+  color: #ccc;
+  background-color: #fff;
+  font-size: 15px;
+  line-height: 32px;
+}
 /* 头部 */
 .caption {
   width: 100%;
@@ -91,31 +116,11 @@ export default {
   text-indent: 0.26rem;
   font-weight: bolder;
 }
-.caption-info {
+/* .caption-info {
   font-size: 0.65rem;
   text-align: center;
   margin-right: 0.63rem;
-}
-.mysearch {
-  background: #ccc;
-  height: 50px;
-  width: 100%;
-  box-sizing: border-box;
-}
-.search {
-  height: 0.9rem;
-  width: 80%;
-  margin: 0.22rem 0 0 0.22rem;
-  border-radius: 5px;
-  outline: 0;
-  text-align: center;
-  font-size: 0.4rem;
-}
-.search-btn {
-  font-size: 0.43rem;
-  float: right;
-  margin: 0.48rem 0.48rem 0 0;
-}
+} */
 .order {
   display: flex;
   justify-content: space-around;
@@ -172,7 +177,7 @@ export default {
   margin-top: -0.13rem;
   text-indent: 0.2rem;
   position: absolute;
-  bottom: 0.13rem;
+  bottom: 0.18rem;
   background: rgba(204, 204, 204, 0.8);
 }
 .pro-item .pName {

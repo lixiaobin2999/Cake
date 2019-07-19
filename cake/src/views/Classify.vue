@@ -1,9 +1,9 @@
 <template>
   <div>
-    <h1 class="fenlei_title">分&nbsp;类</h1>
-    <div class="mySearch">
-      <!-- 点击搜索框后要跳到一个新的组件页面 -->
-      <mt-search autofocus cancel-text v-model="value" :result="filterResult"></mt-search>
+    <!-- 点击搜索框后要跳到一个新的组件页面 -->
+    <div class="my_search">
+      <span class="iconfont sousuo" @click="$router.push('/Search')">&#xe65f;&nbsp;搜索</span>
+      <div style="background:#ddd;height:1px;width:100%;margin:12px 0"></div>
     </div>
     <!-- <h1>dsadsa</h1> -->
     <!-- 左侧边栏 -->
@@ -94,29 +94,48 @@ export default {
     selectedLabel(newV) {
       // console.log(newV);
     }
+  },
+  beforeRouteEnter(to, from, next) {
+    console.log(to);
+    //判断是从哪个路由过来的，
+    if (from.name == "Details") {
+      // to.meta.isBack = false;
+      next(vm => {
+        // console.log(vm); //vm为vue的实例
+        // console.log("组件路由钩子beforeRouteEnter的next");
+        vm.active = "me";
+      });
+      return;
+    }
+    next();
   }
 };
 </script>
-<style lang="stylus" rel="stylesheet/stylus" >
-/* 搜索框的高 */
-.mySearch {
-  height: 52px;
-  margin-top: 36px;
+<style lang="stylus" rel="stylesheet/stylus">
+/* 搜索框的文字样式 */
+.my_search {
+  width: 92%;
+  margin: 12px auto;
+  background: #fff;
 }
 
-.mint-searchbar {
-  background-color: #efeff4 !important;
-}
-
-/* 取消的文字样式 */
-.mySearch .mint-searchbar-cancel {
+.my_search .mint-searchbar-cancel {
   font-size: 14px !important;
   color: #000 !important;
 }
 
-/* 搜索框的文字样式 */
-.mySearch .mint-searchbar-core {
+.my_search .mint-searchbar-core {
   font-size: 14px !important;
+}
+
+.sousuo {
+  display: block;
+  border: 1px solid #5555;
+  border-radius: 5px;
+  color: #ccc;
+  background-color: #fff;
+  font-size: 15px;
+  line-height: 32px;
 }
 
 /* 左侧导航 */
@@ -127,7 +146,7 @@ export default {
   bottom: 0;
   width: 100px;
   background-color: #f9f9f9;
-  margin-top: 36px;
+  // margin-top: 36px;
 }
 
 .cube-scroll-list-wrapper {
@@ -163,8 +182,8 @@ export default {
   right: 0;
   bottom: 0;
   background-color: #f9f9f9;
-  margin-top: 36px;
 
+  // margin-top: 36px;
   ul {
     position: fixed;
     background-color: #fff;
@@ -197,23 +216,6 @@ export default {
       color: #555;
     }
   }
-}
-
-.fenlei_title {
-  position: absolute;
-  width: 100%;
-  top: 0;
-  text-align: center;
-  /* display: block; */
-  color: #303030;
-  height: 30px;
-  /* font-weight: bold; */
-  background: #ffffff;
-  line-height: 30px;
-  padding: 3px 0 3px 0;
-  font-size: 22px;
-  z-index: 999;
-  font-family: '苹方黑体';
 }
 </style>
 

@@ -47,10 +47,12 @@ export default {
       phone: "",
       real_name: "",
       gender: "",
-      birthday: "" //日期组件选中的值
+      birthday: "", //日期组件选中的值
+      isFirstEnter: false // 是否第一次进入，默认false
     };
   },
   created() {
+    this.isFirstEnter = true;
     // 获取该用户的个人信息
     var uid = sessionStorage.getItem("uid");
     if (uid) {
@@ -76,7 +78,7 @@ export default {
   },
   methods: {
     jump() {
-      this.$router.push('/Index');
+      this.$router.push("/Index");
       eventBus.$emit("activeState", "me");
     },
     showFormatPicker() {
@@ -117,6 +119,7 @@ export default {
         )
         .then(result => {
           // console.log(result);
+          this.$toast("保存成功");
         });
     }
   }

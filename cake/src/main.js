@@ -5,10 +5,6 @@ import router from './router'
 import store from './store'
 import 'amfe-flexible'
 
-import MyFooter from './components/MyFooter'
-
-Vue.component("my-footer", MyFooter);
-
 // 完整引入mint-ui
 import MintUI from 'mint-ui'
 // 单引引入mint-ui样式
@@ -25,9 +21,6 @@ Vue.prototype.axios = axios;
 axios.defaults.withCredentials = true
 // 配置axios基础路径
 axios.defaults.baseURL = "http://127.0.0.1:7700"
-
-// 通过EventBus进行兄弟间组件通讯
-// Vue.prototype.eventBus = eventBus
 
 Vue.config.productionTip = false
 

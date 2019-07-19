@@ -1,8 +1,7 @@
 <template>
   <div class="page-navbar">
-    <p class="return_text" @click="$router.push('/Own')">
+    <p class="return_text" @click="$router.push('/Index')">
       <i class="iconfont return">&#xe732;</i>
-      <!-- <span>返回</span> -->
     </p>
     <mt-navbar class="page-part" v-model="selected">
       <mt-tab-item id="1">注册</mt-tab-item>
@@ -21,6 +20,9 @@
         <mt-field placeholder="你的手机号" label="账号" v-model="phone"></mt-field>
         <mt-field type="password" placeholder="请输入密码" label="密码" v-model="password"></mt-field>
         <mt-button @click="login">登录</mt-button>
+        <div class="loseP">
+          <p @click="$router.push('/ResetPwd')">忘记密码?</p>
+        </div>
       </mt-tab-container-item>
     </mt-tab-container>
   </div>
@@ -172,6 +174,8 @@ export default {
               sessionStorage.setItem("uid", uid);
               // 跳转主页
               this.$router.push("/Index");
+            } else {
+              this.$toast(result.data.msg);
             }
           });
       }
@@ -194,12 +198,12 @@ export default {
   }
 };
 </script>
-<style scoped>
+<style>
 .page-navbar {
   margin-top: 20px;
 }
 .page-navbar .mint-tab-item-label {
-  font-size: 16px;
+  font-size: 16px !important;
 }
 .mint-field-other {
   color: #fb7299;
@@ -214,11 +218,11 @@ export default {
 }
 .mint-button--normal {
   width: 100%;
-  background: #ff9db5 !important;
+  background: #ff4001 !important;
   color: #fff !important;
 }
 .verification {
-  background: #fff !important;
+  background: none;
   outline: none;
 }
 .clear {
@@ -230,10 +234,17 @@ export default {
   font-size: 25px;
   margin-left: 20px;
   margin-top: 20px;
-  vertical-align:bottom
+  vertical-align: bottom;
 }
- .return_text span {
+.return_text span {
   font-size: 18px;
-  vertical-align:middle
+  vertical-align: middle;
+}
+/* 忘记密码 */
+.loseP p {
+  font-size: 0.4rem;
+  color: #ccc;
+  margin-top: 20px;
+  margin-left: 10px;
 }
 </style>

@@ -129,8 +129,7 @@ router.get("/keyword", (req, res) => {
   })
   // 搜索栏输入不为空的数值,存到后台搜索历史表中
   if (pname) {
-    var uid = req.session.uid;
-    // console.log(uid)
+    var uid=req.query.uid;
     var sql2 = `INSERT INTO user_search VALUES(NULL,?,?)`;
     pool.query(sql2, [uid, pname], (err, result) => {
       if (err) throw err;
@@ -143,12 +142,22 @@ router.get("/keyword", (req, res) => {
 
 // 搜索登录的用户的历史记录
 router.get("/history", (req, res) => {
-  var uid = req.session.uid;
+  var uid = req.query.uid;
   console.log(uid)
   var sql = `SELECT * FROM user_search WHERE uid=?`;
   pool.query(sql, [uid], (err, result) => {
     if (err) throw err;
     // console.log(result)
+    res.send(result)
+  })
+})
+
+//清空搜索历史记录
+router.get("/clearhis",(req,res)=>{
+  var uid=req.query.uid;
+  var sql=`DELETE FROM user_search WHERE uid=?`;
+  pool.query(sql,[uid],(err,result)=>{
+    if(err) throw err;
     res.send(result)
   })
 })

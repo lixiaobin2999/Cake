@@ -4,7 +4,6 @@ const express = require("express");
 const pool = require("../pool");
 // 创建路由器
 var router = express.Router();
-
 // 用户注册 有正则验证
 router.post("/reg", (req, res) => {
   var phone = req.body.phone;
@@ -41,10 +40,7 @@ router.post("/reg", (req, res) => {
       })
     }
   })
-
 });
-
-
 // 用户登录 要传入 手机号和密码
 router.post("/login", (req, res) => {
   var phone = req.body.phone;
@@ -73,6 +69,24 @@ router.post("/login", (req, res) => {
   })
 });
 
+//忘记密码-修改密码
+router.post("/loseP", (req, res) => {
+  var phone = req.body.phone;
+  var upwd = req.body.upwd;
+  var sql1 = `SELECT * FROM cake_user WHERE phone=?`;
+  pool.query(sql1, [phone], (err, result) => {
+    if (err) throw err;
+    if (result.length > 0) {
+      var sql2 = `UPDATE cake_user SET upwd=md5(?) WHERE phone=?`
+      // console.log(456)
+      pool.query(sql2, [upwd, phone], (err, result) => {
+        if (err) throw err;
+        res.send(result)
+      })
+    }
+  })
+})
+
 
 // 个人中心 /own
 router.post("/own", (req, res) => {
@@ -99,15 +113,16 @@ router.post("/own", (req, res) => {
 
 // 个人信息 /set
 router.post("/set", (req, res) => {
-  var uid = req.session.uid;
+  var uid = req.body.uid;
   var real_name = req.body.real_name;
   var gender = req.body.gender;
   var birthday = req.body.birthday;
-  var sql = `UPDATE cake_user SET real_name=?,gender=?,birthday=? WHERE uid=uid`
+  var sql = `UPDATE cake_user SET real_name=?,gender=?,birthday=? WHERE uid=?`
   pool.query(sql, [real_name, gender, birthday, uid], (err, result) => {
     if (err) throw err;
-    console.log(result)
-    res.send(result)
+    if (result.affectedRows > 0) {
+      res.send({ code: 200, data: result });
+    }
   })
 })
 

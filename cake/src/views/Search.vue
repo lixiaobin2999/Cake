@@ -21,7 +21,10 @@
         </ul>
       </div>
       <div class="history">
-        <div class="h_title">搜索历史</div>
+        <div class="h_title">
+          搜索历史
+          <i class="iconfont" @click="clear_history">&#xe618;</i>
+        </div>
         <ul class="key_word">
           <li v-for="(item,i) of history" :key="i" v-text="item.pname" @click="find(item.pname)"></li>
         </ul>
@@ -30,7 +33,7 @@
     <div class="prolist" v-show="product_show">
       <div class="pro-item" v-for="(item,i) of search_list" :key="i">
         <router-link :to="`/Details/${item.pid}`">
-          <img :src="`http://127.0.0.1:7700/${item.pic}`" alt />
+          <img :src="`http://kirito7.applinzi.com/${item.pic}`" alt />
           <h4 class="pName" v-text="item.pname"></h4>
           <span class="price" v-text="`￥${item.price}`"></span>
         </router-link>
@@ -60,9 +63,11 @@ export default {
   },
   methods: {
     load() {
-      this.axios.get("/product/history").then(result => {
+      var uid = sessionStorage.getItem("uid");
+      this.axios.get("/product/history", { params: { uid } }).then(result => {
         // 该用户的历史搜索记录
         this.history = result.data;
+        console.log(this.history);
         this.history = this.deteleObject(this.history, "pname");
       });
     },
@@ -79,8 +84,9 @@ export default {
       this.show = false; //控制显示搜索
       this.product_show = true; //控制显示商品信息
       this.kw = param;
+      var uid = sessionStorage.getItem("uid");
       this.axios
-        .get("/product/keyword", { params: { pname: param } })
+        .get("/product/keyword", { params: { pname: param, uid: uid } })
         .then(result => {
           console.log(result);
           this.search_list = result.data;
@@ -100,6 +106,14 @@ export default {
       this.product_show = false;
       this.load();
       this.search_list = [];
+    },
+    // 点击删除,清空历史搜索记录
+    clear_history() {
+      var uid = sessionStorage.getItem("uid");
+      this.axios.get("/product/clearhis", { params: { uid } }).then(result => {
+        //删除后,刷新历史搜索记录
+        this.load();
+      });
     }
   }
 };
@@ -216,6 +230,14 @@ export default {
   font-size: 0.38rem;
   color: #000;
   opacity: 0.5;
+}
+.history .h_title i {
+  position: absolute;
+  right: 30px;
+  bottom: 56%;
+  font-size: 17px;
+  font-weight: lighter;
+  color: #9c9c9c;
 }
 </style>
 

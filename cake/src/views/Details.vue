@@ -9,7 +9,7 @@
     <div @click="$router.push('/Index')" class="iconfont toCart">&#xe611;</div>
     <!-- 大图 -->
     <div class="largeImg">
-      <img v-if="list.pic!=undefined" :src="`http://127.0.0.1:7700/${list.pic}`" alt />
+      <img v-if="list.pic!=undefined" :src="`http://kirito7.applinzi.com/${list.pic}`" alt />
     </div>
     <!-- 简介 -->
     <div class="intro">
@@ -55,7 +55,7 @@
       <mt-tab-container-item id="tab1">
         <img
           v-if="list.details_pic!=undefined"
-          :src="`http://127.0.0.1:7700/${list.details_pic}`"
+          :src="`http://kirito7.applinzi.com/${list.details_pic}`"
           alt
         />
       </mt-tab-container-item>
@@ -92,7 +92,7 @@
       <div class="Spec">
         <!-- 上面图片 价格 库存 -->
         <div class="pic_list">
-          <img v-if="list.pic!=undefined" :src="`http://127.0.0.1:7700/${list.pic}`" />
+          <img v-if="list.pic!=undefined" :src="`http://kirito7.applinzi.com/${list.pic}`" />
           <div v-text="`￥${priceAll}`"></div>
           <div class="Repertory">
             库存
@@ -186,7 +186,7 @@ export default {
             this.list = result.data.data.product[0];
             var spec = result.data.data.spec;
             this.spec_list = spec;
-            // console.log(spec);
+            console.log(spec);
             // 价钱的数组
             var priceArray = [];
             // 库存
@@ -299,12 +299,13 @@ export default {
     },
     // 点击出现选择规格
     Select() {
-      this.show_spec = true;
-      var selectArr = this.selectArr;
-      var shopItemInfo = this.shopItemInfo;
-      // 如果为登陆状态 加入购物车
       var uid = sessionStorage.getItem("uid");
       if (uid != undefined) {
+        this.show_spec = true;
+        var selectArr = this.selectArr;
+        var shopItemInfo = this.shopItemInfo;
+        // 如果为登陆状态 加入购物车
+
         // 选中的规格
         var name = selectArr.toString();
         // 拿到对象的属性名
@@ -334,7 +335,7 @@ export default {
           }
         }
       } else {
-        console.log("没有登录");
+        this.$toast("请先登录");
       }
     },
     // 点击遮罩层退出选择规格选择
@@ -400,7 +401,7 @@ export default {
     },
     // 数量的加减
     addNum(i) {
-      if (i == -1 && num == 1) {
+      if (i == -1 && this.number == 1) {
         this.number = 1;
       } else {
         this.number += i;
@@ -440,6 +441,10 @@ export default {
       this.show = true;
       this.load();
     }
+  },
+  beforeRouteLeave(to, from, next) {
+    console.log("离开");
+    next();
   }
 };
 </script>
@@ -588,6 +593,7 @@ i {
 }
 .gat-nav li.li-nav {
   margin: 0.27rem 0 0 0.4rem;
+  font-size: 0.1rem;
 }
 .gat-nav li i {
   margin-bottom: 0.08rem;
