@@ -14,15 +14,14 @@
 export default {
   data() {
     return {
-      footer_show: true,
+      footer_show: true
     };
   },
   created() {
     // 设置保存登录状态的uid
     this.$store.commit("setUserId");
   },
-  methods: {
-  }
+  methods: {}
 };
 </script>
 <style >
@@ -31,4 +30,10 @@ export default {
 @import "./assets/iconfont/iconfont3.css";
 </style>
 <style>
+.mint-button{
+  background: #fff !important;
+}
+.mint-button .mint-button-text {
+  white-space: nowrap !important;
+}
 </style>
