@@ -30,10 +30,9 @@ export default {
 @import "./assets/iconfont/iconfont3.css";
 </style>
 <style>
-.mint-button{
-  background: #fff !important;
-}
-.mint-button .mint-button-text {
-  white-space: nowrap !important;
+
+
+.horizontal-scroll-list-wrap{
+  border:0 !important;
 }
 </style>

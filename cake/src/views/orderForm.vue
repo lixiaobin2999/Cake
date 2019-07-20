@@ -1,16 +1,21 @@
 <template>
   <div class="container">
     <div style="height:50px;width:100%;"></div>
-    <div class="Tabbar">
-      <mt-button class="toggle active" size="small" @click.native.prevent="active = ''">全部</mt-button>
-      <mt-button class="toggle" size="small" @click.native.prevent="active = ''">待发货</mt-button>
-      <mt-button class="toggle" size="small" @click.native.prevent="active = ''">待付款</mt-button>
-      <mt-button class="toggle" size="small" @click.native.prevent="active = ''">待收货</mt-button>
-      <mt-button class="toggle" size="small" @click.native.prevent="active = ''">已完成</mt-button>
-      <mt-button class="toggle" size="small" @click.native.prevent="active = ''">已取消</mt-button>
-      <mt-button class="toggle" size="small" @click.native.prevent="active = ''">售后</mt-button>
+    <!-- 订单状态 -->
+    <div slot="content" class="nav-scroll-list-wrap scroll-wrapper">
+      <cube-scroll
+        ref="scroll"
+        :data="navTxts"
+        direction="horizontal"
+        class="horizontal-scroll-list-wrap"
+      >
+        <ul class="nav-wrapper">
+          <li v-for="(item,i) of navTxts" :key="i" class="nav-item">{{item}}</li>
+        </ul>
+      </cube-scroll>
     </div>
-    <div style="min-height:3px;width:100%;"></div>
+    <div style="min-height:8px;width:100%;"></div>
+    <!-- 订单表 -->
     <div class="order-form">
       <router-link to>
         <div class="form-item">
@@ -57,13 +62,32 @@
   </div>
 </template>
 <script>
-export default {};
+const txts = ["全部", "待付款", "待发货", "待收货", "已完成", "已取消", "售后"];
+export default {
+  data() {
+    return {
+      navTxts: txts,
+      options: 1
+    };
+  },
+  methods: {
+    scrollTo() {
+      this.$refs.scroll.scrollTo(
+        0,
+        this.scrollToY,
+        this.scrollToTime,
+        ease[this.scrollToEasing]
+      );
+    }
+  }
+};
 </script>
-<style scoped>
+<style scoped  lang="stylus" rel="stylesheet/stylus">
 .container {
   background: rgba(221, 221, 221, 0.5);
   /* width:100%; */
 }
+
 /* 状态样式 */
 .Tabbar {
   justify-content: space-around;
@@ -72,31 +96,37 @@ export default {};
   display: flex;
   /* width: 120%; */
 }
+
 .Tabbar .toggle {
   background: #fff;
   box-shadow: none;
   border-radius: 0;
   border: 0;
 }
+
 .Tabbar .active {
   border-bottom: 1px solid #ea5454;
   color: #ea5454;
 }
+
 /* 订单 */
 .order-form {
   background: #fff;
   /* width:95%; */
   margin: 0 auto;
 }
+
 .order-form .form-item {
   font-size: 12px;
   color: #bbb;
   padding: 12px 0;
   margin: 0 2.5%;
 }
+
 .order-form .form-item .order-time {
   float: right;
 }
+
 .order-form .form-box {
   margin: 0 10px;
   border-top: 1px solid #ccc;
@@ -105,13 +135,16 @@ export default {};
   position: relative;
   color: #333;
 }
+
 .order-form .form-box img {
   width: 100px;
   height: 100px;
 }
+
 .form-box .form-info {
   height: 100px;
 }
+
 .form-box .form-info .pName {
   position: absolute;
   font-size: 18px;
@@ -119,6 +152,7 @@ export default {};
   top: 18px;
   left: 120px;
 }
+
 .form-box .form-info .state {
   position: absolute;
   font-size: 15px;
@@ -126,6 +160,7 @@ export default {};
   top: 50px;
   left: 120px;
 }
+
 .form-box .form-info .count {
   position: absolute;
   font-size: 15px;
@@ -133,6 +168,7 @@ export default {};
   top: 90px;
   left: 120px;
 }
+
 .form-box .form-info .subtotal {
   position: absolute;
   font-size: 18px;
@@ -140,26 +176,61 @@ export default {};
   top: 85px;
   left: 265px;
 }
+
 .order-form .end {
   color: #333;
   padding: 18px 12px 25px 10px;
   font-size: 18px;
 }
+
 .end .total {
   color: #ed143d;
   font-weight: bolder;
 }
+
 .end .over {
   float: right;
 }
+
 .end .over span.pay {
   margin-left: 10px;
 }
+
 .end .over span {
   padding: 6px 12px;
   font-size: 15px;
   text-align: center;
   border: 1px solid #ccc;
   border-radius: 5px;
+}
+
+/* 订单导航 */
+.nav-scroll-list-wrap {
+  background-color: white;
+  height: 39px;
+  border-bottom: 2px solid #ddd;
+
+  .cube-scroll-content {
+    display: inline-block;
+
+    .nav-wrapper {
+      display: inline-block;
+      white-space: nowrap;
+      line-height: 36px;
+      padding: 0 5px;
+
+      .nav-item {
+        font-size: 18px;
+        display: inline-block;
+        padding: 0 3px;
+        margin: 0 5px;
+
+        &:nth-child(1) {
+          color: #fa7b7a;
+          border-bottom: 1px solid #ea5454;
+        }
+      }
+    }
+  }
 }
 </style>

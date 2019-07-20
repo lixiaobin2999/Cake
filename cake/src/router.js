@@ -12,6 +12,7 @@ import Search from './views/Search.vue'
 import ProductList from './views/ProductList.vue'
 import ResetPwd from './views/ResetPwd.vue'
 import orderForm from './views/orderForm.vue'
+import Scroll from './views/scroll.vue'
 
 Vue.use(Router)
 
@@ -98,6 +99,12 @@ isBack: false, //用于判断上一个页面是哪个
   path: '/orderForm',
   name: 'orderForm',
   component: orderForm
+},
+,
+{
+  path: '/Scroll',
+  name: 'Scroll',
+  component: Scroll
 },
   ]
 })
