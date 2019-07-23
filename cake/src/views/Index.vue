@@ -1,7 +1,6 @@
 <template>
   <div>
     <div>
-      <div class="test"></div>
       <mt-tab-container v-model="active">
         <!-- 首页 -->
         <mt-tab-container-item id="myIndex">
@@ -14,26 +13,33 @@
             <!-- 产品导航 -->
             <div class="product-nav">
               <div class="list-nav" @click="detail">
-                <i class="iconfont">&#xe6be;</i>
+                <!-- <i class="iconfont">&#xe6be;</i> -->
+                <img src="/images/product/_20190722205301_14.png" style="width:45px;" alt />
                 <span class="list-menu">蛋糕</span>
               </div>
               <div class="list-nav" @click="detail">
-                <i class="iconfont">&#xe666;</i>
+                <!-- <i class="iconfont font">&#xe666;</i> -->
+                <img src="/images/product/_20190722205301_26.png" style="width:45px;" alt />
                 <span class="list-menu">甜点</span>
               </div>
               <div class="list-nav" @click="detail">
-                <i class="iconfont">&#xe613;</i>
+                <!-- <i class="iconfont font">&#xe613;</i> -->
+                <img src="/images/product/_20190722205301_34.png" style="width:45px;" alt />
                 <span class="list-menu">小食</span>
               </div>
               <div class="list-nav" @click="detail">
-                <i class="iconfont">&#xe601;</i>
+                <!-- <i class="iconfont">&#xe601;</i> -->
+                <img src="/images/product/_20190722205301_28.png" style="width:45px;" alt />
                 <span class="list-menu">礼盒</span>
               </div>
             </div>
-            <!-- 推荐 -->
-            <router-link to="#">
-              <img src="images/product/64sd78f5465sda4170.jpg" />
-            </router-link>
+            <mt-swipe :auto="3000" :defaultIndex="0" :speed="800" :show-indicators="true">
+              <mt-swipe-item v-for="(carousel,i) of carousel_list" :key="i">
+                <router-link :to="`/Details/${carousel.pid}`">
+                  <img :src="`http://127.0.0.1:7700/${carousel.img}`" style="height:200px" alt />
+                </router-link>
+              </mt-swipe-item>
+            </mt-swipe>
             <!-- 公告 -->
             <div class="gonggao">
               <p class="iconfont">
@@ -41,47 +47,26 @@
                   <i class="iconfont">&#xe61a;</i>
                 </span>
                 <span to="#" class="slide">
-                  <i>店铺营业时间为：8:30-18:00,对每一份甜点心怀敬意,为保证最佳赏味,请提前预约制作。</i>
+                  <i
+                    :class="[isRun?'run':'',!isRun?'paused':'']"
+                  >店铺营业时间为：8:30-18:00,对每一份甜点心怀敬意,为保证最佳赏味,请提前预约制作。</i>
                 </span>
               </p>
             </div>
-            <mt-swipe :auto="3000" :defaultIndex="0" :show-indicators="true">
-              <mt-swipe-item>
-                <router-link to="#">
-                  <img src="images/product/64sd78f5465sda414.png" alt />
-                </router-link>
-              </mt-swipe-item>
-              <mt-swipe-item>
-                <router-link to="#">
-                  <img src="images/product/64sd78f5465sda4170.jpg" alt />
-                </router-link>
-              </mt-swipe-item>
-              <mt-swipe-item>
-                <router-link to="#">
-                  <img src="images/product/64sd78f5465sda4171.jpg" alt />
-                </router-link>
-              </mt-swipe-item>
-              <mt-swipe-item>
-                <router-link to="#">
-                  <img src="images/product/64sd78f5465sda4159.jpg" alt />
-                </router-link>
-              </mt-swipe-item>
-              <mt-swipe-item>
-                <router-link to="#">
-                  <img src="images/product/64sd78f5465sda4121.jpg" alt />
-                </router-link>
-              </mt-swipe-item>
-            </mt-swipe>
+            <!-- 推荐 -->
+            <router-link to="Details/29">
+              <img src="images/product/64sd78f5465sda417011.jpg" />
+            </router-link>
             <!-- 小食 -->
             <div class="snack-list clearfix">
-              <span class="snack-title">小食</span>
+              <span class="snack-title" v-text="series_name"></span>
               <router-link :to="`/ProductList/${cid}`" class="product-more">更多&gt;</router-link>
             </div>
             <div class="snack-list clearfix" style="margin-bottom: 15px;">
               <ul class="mylist">
                 <li class="snack-item" v-for="(item,i) of product_list" :key="i">
                   <router-link :to="`/Details/${item.pid}`">
-                    <img :src="`http://kirito7.applinzi.com/${item.pic}`" alt />
+                    <img :src="`http://127.0.0.1:7700/${item.pic}`" alt />
                     <span class="title" v-text="item.pname"></span>
                     <span class="price" v-text="`￥${item.price}`"></span>
                   </router-link>
@@ -101,10 +86,11 @@
           <cart></cart>
         </mt-tab-container-item>
         <!-- 个人中心 :style="`height:${resizeHeight}px` -->
-        <mt-tab-container-item id="me">
+        <mt-tab-container-item id="me" :style="`height:${resizeHeight}px`">
           <own></own>
         </mt-tab-container-item>
       </mt-tab-container>
+
       <!-- 底部 -->
       <mt-tabbar v-model="active" fixed>
         <mt-tab-item id="myIndex">
@@ -123,7 +109,7 @@
       </mt-tabbar>
     </div>
   </div>
- </template>
+</template>
 <script>
 // 导入eventBus 兄弟之间通信
 import { eventBus } from "../eventBus.js";
@@ -137,70 +123,90 @@ export default {
       active: "myIndex",
       // 屏幕的高度
       resizeHeight: 650,
+      // 屏幕的宽度
+      resizeWeight: 0,
       // 轮播图的数据
       carousel_list: [],
       // 首页显示某个系列的商品数据
       product_list: [],
       // 某个系列下的id
-      cid: 7
+      cid: 2,
+      // 系列名称
+      series_name: "小食",
+      // 公告动画
+      isRun: true
     };
   },
-  // props: ["old_active"],
   created() {
-    // 有其他页面返回到首页时,去到特定的页面
-    // console.log(this)
-    // console.log("1:" + this.active);
-    // var index = this;
-    // index.eventBus.$on("activeState", data => {
-    //   //index._data.active = active;
-    //   // index._data.active = active;
-    //   console.log(index.active);
-    //   console.log((this.active = data));
-    //   //var active = this.active;
-    //   // console.log(this.active);
-    // });
-    // console.log(index.active);
-    //console.log(1);
+    // console.log(this.scrollBehavior)
     // 屏幕可用区域变化时执行 (分类的高度需要与屏幕高度一样)
     this.resizeHeight = screen.availHeight;
     window.addEventListener("resize", () => {
       this.resizeHeight = screen.availHeight;
+      this.resizeWeight = window.screen.availWidth;
+      this.isRun = false;
+      setTimeout(() => {
+        this.isRun = true;
+      }, 10);
     });
     // 获取后台数据显示 需要传入某系列的cid
     var cid = this.cid;
-    this.axios.get("/index/index", { params: { cid: cid}}).then(result => {
+    this.axios.get("/index/index", { params: { cid: cid } }).then(result => {
       // console.log(result.data.data);
       var list = result.data.data;
       this.carousel_list = list.carousel;
+      // this.product_list = list.product;
+      list.product.splice(list.product.length - 2);
       this.product_list = list.product;
+      this.series_name = list.product[0].cname;
     });
   },
   // 注册子组件
   components: {
-    Classify: Classify,
+    classify: Classify,
     cart: Cart,
     own: Own
   },
   methods: {
     detail() {
       this.active = "myProduct";
-    },
-    select_active: function(bool) {
-      this.active = bool;
-      console.log(bool);
     }
   },
   watch: {
     active() {
       // console.log(123)
     }
+  },
+  beforeRouteEnter(to, from, next) {
+    console.log(to);
+    console.log(from);
+    // console.log(next)
+    //判断是从哪个路由过来的，
+    if (from.name == "Details" && to.query.temp == "Index") {
+      // to.meta.keepAlive = false;
+      next(vm => {
+        vm.active = "myIndex";
+      });
+      return;
+    }
+    if (from.name == "Details" && to.query.temp == "Cart") {
+      next(vm => {
+        vm.active = "myCart";
+      });
+      return;
+    }
+    next();
+  },
+  beforeRouteLeave(to, from, next) {
+    // console.log("离开");
+    if (to.name === "ProductList") {
+      to.query.temp = "Classify";
+    }
+    next();
   }
 };
 </script>
 <style scope>
-div.test{
-  width:620px;
-}
 body {
   background: #fff;
 }
@@ -217,7 +223,6 @@ body {
   background-color: #fff;
   font-size: 15px;
   line-height: 32px;
-  text-align: center;
 }
 .clearfix::before {
   content: "";
@@ -255,25 +260,22 @@ img {
 }
 /* 公告 */
 .gonggao {
-  text-align: left;
   width: 95%;
-  display: inline-block;
   overflow: hidden;
+  margin: auto;
+  padding: 10px 0;
 }
-.gonggao p {
-  display: inline-block;
-  position: relative;
-}
+
 .gonggao span.up {
-  width: 4%;
+  width: 5%;
+  margin-right: 3px;
   background: #fff;
   color: #243f4c;
   overflow: hidden;
-  vertical-align: middle;
   float: left;
 }
 .gonggao .slide {
-  width: 96%;
+  width: 94%;
   color: #795548;
   float: left;
   overflow: hidden;
@@ -281,17 +283,22 @@ img {
 .gonggao .slide i {
   font-style: normal;
   display: inline-block;
-  animation: translatex 7s linear infinite;
-  /* animation-play-state: paused; */
+  animation: translatex 10s linear infinite;
   white-space: nowrap;
 }
 .gonggao .slide i.run {
   animation-play-state: running;
 }
-
+.gonggao .slide i.paused {
+  animation-play-state: paused;
+}
 @keyframes translatex {
-  0% {transform: translateX(0rem);}
-  100% {transform: translateX(-620px);}
+  0% {
+    transform: translateX(0px);
+  }
+  100% {
+    transform: translateX(-620px);
+  }
 }
 /* 轮播 */
 .mint-swipe {
@@ -347,7 +354,6 @@ img {
 }
 .snack-item span {
   margin: 0.12rem 0 0 0;
-  font-weight: 600;
   white-space: pre-wrap;
   font-size: 0.4rem;
   display: block;
@@ -355,10 +361,11 @@ img {
 .snack-item .title {
   display: inline-block;
   color: #333;
-  height: 32px;
+  height: 21px;
 }
 .snack-item .price {
   color: crimson;
+  font-size: 0.35rem;
 }
 /* 搜索框的高 */
 

@@ -9,7 +9,7 @@
         <span class="input_sp" v-if="!item.selected" @click="radios(index)"></span>
       </label>
       <router-link :to="`/Details/${item.pid}`">
-        <img class="img" :src="`http://kirito7.applinzi.com/${item.pic}`" alt />
+        <img class="img" :src="`http://127.0.0.1:7700/${item.pic}`" alt />
       </router-link>
       <div>
         <router-link :to="`/Details/${item.pid}`">
@@ -18,7 +18,7 @@
           </span>
         </router-link>
         <span class="state">
-          <span :class="{none:item.is_state=='-1'}" v-text="`状态:\n${item.is_state}`"></span>
+          <span :class="{none:item.is_state=='-1'}" v-text="`状态:\n${item.is_state==0?'预定':'现货'}`"></span>
           <span :class="{none:item.size==null}" v-text="`尺寸:\n${item.size}`"></span>
           <span :class="{none:item.fruit==null}" v-text="`水果:\n${item.fruit}`"></span>
           <span :class="{none:item.else_message==null}" v-text="`套餐:\n${item.else_message}`"></span>
@@ -33,6 +33,9 @@
           <span class="sbtn" @click="btn_add(index)">+</span>
         </span>
       </div>
+    </div>
+    <div v-if="noCart" style="margin-top: 86px;width:100%;">
+      <img src="images/product/0aebc5277312293f7c4648af24ba4cc.png" alt />
     </div>
     <div class="bottom">
       <label for="bottom_input" @change="selectAll">
@@ -50,7 +53,7 @@
       </div>
       <div class="bottom_right">
         <label class="delete" @click="delCart">删除</label>
-        <label class="close">结算</label>
+        <label class="close" @click="toClose">结算</label>
       </div>
     </div>
   </div>
@@ -66,7 +69,9 @@ export default {
       // 全选
       isSelectAll: false,
       // 是否为登陆状态
-      uid: ""
+      uid: "",
+      // 购物车为空
+      noCart: false
     };
   },
   created() {
@@ -79,7 +84,7 @@ export default {
     // 获取购物车列表信息
     load() {
       // 加了判断,是否为登陆状态
-      this.uid = sessionStorage.getItem("uid")
+      this.uid = this.$store.getters.getUserId;
       var uid = this.uid;
       if (uid != undefined) {
         this.axios
@@ -92,23 +97,25 @@ export default {
                 i.selected = false;
               }
               this.list = result.data.data;
+              this.noCart = false;
             } else {
-              console.log("购物车为空");
+              // console.log("购物车为空");
+              this.noCart = true;
             }
           });
       } else {
-        console.log("没有登录");
+        // console.log("没有登录");
+        this.noCart = true;
       }
     },
     // 全选
     selectAll(e) {
+      if (!this.$store.getters.getUserId) return;
       //全选按钮状态
       var cb = e.target.checked;
-      console.log(cb);
       //依据状态修改列表cb
       for (var item of this.list) {
         item.selected = cb;
-        console.log(item.selected);
         this.hh();
       }
     },
@@ -124,7 +131,7 @@ export default {
       }
     },
     //总价和数量更改
-    hh() {
+    hh: function() {
       //数量*单价的价格
       var price = 0;
       //勾选数量
@@ -133,22 +140,17 @@ export default {
       for (var i = 0; i < list.length; i++) {
         if (list[i].selected) {
           price += list[i].count * list[i].price;
-          console.log(price);
           numb += list[i].count;
-          console.log(numb);
         }
       }
       // 总价
       this.money = price;
-      console.log(this.money);
       //勾选数量
       this.num = numb;
-      console.log(numb);
     },
     radios(index) {
       //循环的商品
       var list = this.list;
-      console.log(list);
       list[index].selected = !list[index].selected;
       this.hh();
     },
@@ -222,35 +224,40 @@ export default {
         .catch(err => {
           return;
         });
+    },
+    toClose() {
+      var list = [];
+      for (var item of this.list) {
+        if (item.selected == true) {
+          list.push(item);
+        }
+      }
+      if (list.length > 0) {
+        this.$router.push({
+          path: "/Close",
+          query: {
+            data: list
+          }
+        });
+      } else {
+        this.$toast({
+          message: "请选中商品",
+          duration: 1000
+        });
+      }
     }
   },
-  watch: {
-    uid() {
-      this.load();
-    }
-  },
+  // watch: {
+  //   uid() {
+  //     this.load();
+  //   }
+  // },
   activated() {
     // keepAlive(缓存)开启时 重新刷新数据
-    // console.log(456);
     this.isSelectAll = false;
     this.money = 0;
     this.num = 0;
-    var uid = sessionStorage.getItem("uid");
     this.list = [];
-    this.axios
-      .get("/cart/get_cart", { params: { user_id: uid } })
-      .then(result => {
-        // console.log(result.data);
-        this.list = result.data.data;
-        if (result.data.code != 400) {
-          for (var i of result.data.data) {
-            i.selected = false;
-          }
-          this.list = result.data.data;
-        } else {
-          console.log("购物车为空");
-        }
-      });
     this.load();
   }
 };
@@ -259,7 +266,9 @@ export default {
 .none {
   display: none;
 }
-
+.cart {
+  margin-bottom: 105px;
+}
 .cart .cart_box {
   display: flex;
   /* margin-top:20px; */
@@ -414,6 +423,7 @@ export default {
 .cart .bottom_right {
   display: inline-block;
   position: relative;
+  top: -7px;
   bottom: 4px;
   right: -44px;
   line-height: 50px;

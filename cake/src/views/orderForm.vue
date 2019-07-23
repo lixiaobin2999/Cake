@@ -1,6 +1,8 @@
 <template>
   <div class="container">
-    <div style="height:50px;width:100%;"></div>
+    <div style="height:50px;width:100%;">
+      <i class="iconfont" @click="$router.go(-1);" style="font-size:27px;">&#xe732;</i>
+    </div>
     <!-- 订单状态 -->
     <div slot="content" class="nav-scroll-list-wrap scroll-wrapper">
       <cube-scroll
@@ -67,8 +69,19 @@ export default {
   data() {
     return {
       navTxts: txts,
-      options: 1
+      options: 1,
+      order_list:[]
     };
+  },
+  created(){
+    // 获取用户id
+    this.uid = this.$store.getters.getUserId;
+    if(this.uid){
+      // 获取该用户的所有订单信息
+      this.axios.get("/product/order_list",{params:{user_id:this.uid}}).then(result=>{
+        console.log(result)
+      })
+    }
   },
   methods: {
     scrollTo() {

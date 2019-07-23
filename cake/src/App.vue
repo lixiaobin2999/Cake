@@ -29,10 +29,22 @@ export default {
 @import "./assets/iconfont/iconfont2.css";
 @import "./assets/iconfont/iconfont3.css";
 </style>
-<style>
+<style lang="stylus" rel="stylesheet/stylus">
+.horizontal-scroll-list-wrap {
+  border: 0 !important;
 
+  .cube-scroll-content {
+    display: inline-block;
+  }
 
-.horizontal-scroll-list-wrap{
-  border:0 !important;
+  .list-wrapper {
+    padding: 0 10px;
+    line-height: 60px;
+    white-space: nowrap;
+  }
+
+  .list-item {
+    display: inline-block;
+  }
 }
 </style>

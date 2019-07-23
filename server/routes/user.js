@@ -4,6 +4,7 @@ const express = require("express");
 const pool = require("../pool");
 // 创建路由器
 var router = express.Router();
+
 // 用户注册 有正则验证
 router.post("/reg", (req, res) => {
   var phone = req.body.phone;
@@ -33,14 +34,17 @@ router.post("/reg", (req, res) => {
       pool.query(sql2, [phone, upwd], (err, result) => {
         if (err) throw err;
         if (result.affectedRows > 0) {
-          res.send({ code: 200, msg: "注册成功" });
+          res.send({ code: 200, data: result, msg: "注册成功" });
         } else {
           res.send({ code: 400, msg: "注册失败" });
         }
       })
     }
   })
+
 });
+
+
 // 用户登录 要传入 手机号和密码
 router.post("/login", (req, res) => {
   var phone = req.body.phone;
@@ -61,6 +65,7 @@ router.post("/login", (req, res) => {
     if (result.length > 0) {
       // session 的登陆id
       req.session.uid = result[0].uid;
+      console.log(result)
       console.log(req.session.uid)
       res.send({ code: 200, data: result });
     } else {
@@ -113,7 +118,7 @@ router.post("/own", (req, res) => {
 
 // 个人信息 /set
 router.post("/set", (req, res) => {
-  var uid = req.body.uid;
+  var uid = req.body.uid;;
   var real_name = req.body.real_name;
   var gender = req.body.gender;
   var birthday = req.body.birthday;
@@ -122,6 +127,8 @@ router.post("/set", (req, res) => {
     if (err) throw err;
     if (result.affectedRows > 0) {
       res.send({ code: 200, data: result });
+    } else {
+      res.send({ code: 400, msg: "保存失败" })
     }
   })
 })

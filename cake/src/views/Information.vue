@@ -5,9 +5,10 @@
       <h1 class="no_wrap">个人信息</h1>
     </div>
     <div class="content">
-      <div class="logo">
-        <img src="../../public/images/avatar.png" alt />
+      <div class="logo" @click.stop="uploadHeadImg">
+        <img :src="pic" alt />
       </div>
+      <input type="file" @change="handleFile" class="hiddenInput" />
       <div class="same_style">
         <span class="item_info" v-text="`手机号:${phone}`"></span>
       </div>
@@ -35,12 +36,8 @@
 </template>
 <script>
 // 导入eventBus 兄弟之间通信
-import eventBus from "../eventBus.js";
+// import eventBus from "../eventBus.js";
 export default {
-  // 返回上一级 是回到个人中心页
-  // props:{
-  //   old_active: "me"
-  // },
   data() {
     return {
       birth: "请选择生日", //页面显示的日期
@@ -48,13 +45,14 @@ export default {
       real_name: "",
       gender: "",
       birthday: "", //日期组件选中的值
-      isFirstEnter: false // 是否第一次进入，默认false
+      isFirstEnter: false, // 是否第一次进入，默认false
+      pic: "images/avatar.png"
     };
   },
   created() {
     this.isFirstEnter = true;
     // 获取该用户的个人信息
-    var uid = sessionStorage.getItem("uid");
+    var uid = this.$store.getters.getUserId;
     if (uid) {
       this.axios.post("/user/own", `uid=${uid}`).then(result => {
         // console.log(result);
@@ -77,19 +75,38 @@ export default {
     }
   },
   methods: {
+    // 打开图片上传
+    uploadHeadImg: function() {
+      this.$el.querySelector(".hiddenInput").click();
+    },
+    // 将头像显示
+    handleFile: function(e) {
+      let $target = e.target || e.srcElement;
+      let file = $target.files[0];
+      var reader = new FileReader();
+      reader.onload = data => {
+        let res = data.target || data.srcElement;
+        this.pic = res.result;
+      };
+      reader.readAsDataURL(file);
+    },
     jump() {
       this.$router.push("/Index");
-      eventBus.$emit("activeState", "me");
+      // eventBus.$emit("activeState", "me");
     },
     showFormatPicker() {
+      var time = new Date();
+      var year = time.getFullYear();
+      var month = time.getMonth();
+      var date = time.getDate();
       if (!this.formatPicker) {
         this.formatPicker = this.$createDatePicker({
           title: "生日",
-          min: new Date(2008, 7, 8),
-          max: new Date(2020, 9, 20),
+          min: new Date(1920, 0, 1),
+          max: new Date(year, month, date),
           value: new Date(this.birthday),
           format: {
-            year: "YY年",
+            year: "YYYY年",
             month: "MM月",
             date: "D 日"
           },
@@ -104,7 +121,7 @@ export default {
     },
     //存入用户修改的个人信息
     save() {
-      var uid = sessionStorage.getItem("uid");
+      var uid = this.$store.getters.getUserId;
       if (female.checked == true) {
         this.gender = 0;
       } else if (male.checked == true) {
@@ -119,13 +136,20 @@ export default {
         )
         .then(result => {
           // console.log(result);
-          this.$toast("保存成功");
+          if (result.data.code == 200) {
+            this.$toast("保存成功");
+          } else {
+            this.$messagebox("保存失败");
+          }
         });
     }
   }
 };
 </script>
 <style>
+.hiddenInput {
+  display: none;
+}
 .all_font {
   font: 0.12rem/1.5 "Hiragino Sans GB", STFangsong, "Microsoft YaHei", Helvetica,
     STXihei, Arial, serif;

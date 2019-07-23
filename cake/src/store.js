@@ -11,7 +11,11 @@ export default new Vuex.Store({
   // 修改vuex中全局共享数据
   mutations: {
     setUserId(state) {
-      state.userId = sessionStorage.getItem("uid");
+      if(sessionStorage.getItem("uid")!=null) {
+        state.userId = sessionStorage.getItem("uid");
+      } else {
+        state.userId = "";
+      }
     },
     delUserId(state) {
       state.userId = "";

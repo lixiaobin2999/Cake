@@ -7,6 +7,7 @@
     <mt-field type="password" label="新密码" placeholder="8~16位,数字、字母、字符包含两种" v-model="password"></mt-field>
     <div class="button">
       <mt-button class="sign" @click="sign">确定</mt-button>
+      <p @click="$router.push('/Login')" class="login_jump">返回登录注册页</p>
     </div>
   </div>
 </template>
@@ -35,43 +36,7 @@ export default {
         //验证码的长度
         var codeLength = 4;
         //随机数
-        var random = new Array(
-          0,
-          1,
-          2,
-          3,
-          4,
-          5,
-          6,
-          7,
-          8,
-          9,
-          "A",
-          "B",
-          "C",
-          "D",
-          "E",
-          "F",
-          "G",
-          "H",
-          "I",
-          "J",
-          "K",
-          "L",
-          "M",
-          "N",
-          "O",
-          "P",
-          "Q",
-          "R",
-          "S",
-          "T",
-          "U",
-          "V",
-          "W",
-          "X",
-          "Y",
-          "Z"
+        var random = new Array(0,1,2,3,4,5,6,7,8,9,"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"
         );
         for (var i = 0; i < codeLength; i++) {
           //取得随机数的索引（0~35）
@@ -120,6 +85,12 @@ export default {
   background: #ff4001 !important;
   color: #fff;
   font-size: 15px;
+}
+.login_jump {
+  font-size: 0.4rem;
+  color: #ccc;
+  margin-top: 20px;
+  margin-left: 10px;
 }
 </style>
 

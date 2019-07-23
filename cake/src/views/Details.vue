@@ -2,14 +2,14 @@
   <div class="container" v-if="show">
     <!-- .icon-fenxiang -->
     <div class="caption">
-      <i class="iconfont" @click="$router.go(-1)">&#xe732;</i>
+      <i class="iconfont" @click="$router.go(-1);">&#xe732;</i>
       <h1 class="caption-info">商品详情</h1>
     </div>
     <!-- 去到购物车 -->
-    <div @click="$router.push('/Index')" class="iconfont toCart">&#xe611;</div>
+    <div @click="To('Cart')" class="iconfont toCart">&#xe611;</div>
     <!-- 大图 -->
     <div class="largeImg">
-      <img v-if="list.pic!=undefined" :src="`http://kirito7.applinzi.com/${list.pic}`" alt />
+      <img v-if="list.pic!=undefined" :src="`http://127.0.0.1:7700/${list.pic}`" alt />
     </div>
     <!-- 简介 -->
     <div class="intro">
@@ -55,7 +55,7 @@
       <mt-tab-container-item id="tab1">
         <img
           v-if="list.details_pic!=undefined"
-          :src="`http://kirito7.applinzi.com/${list.details_pic}`"
+          :src="`http://127.0.0.1:7700/${list.details_pic}`"
           alt
         />
       </mt-tab-container-item>
@@ -72,15 +72,17 @@
       <ul class="gat-nav">
         <li class="li-nav">
           <i class="iconfont">&#xe604;</i>
-          <span @click="$router.push('/Index');">首页</span>
+          <span @click="To('Index')">首页</span>
         </li>
         <li class="li-nav">
-          <i class="iconfont">&#xe608;</i>
+          <label for="input">
+            <i class="iconfont" :class="{actived:isSelected}" @click="isChange">&#xe608;</i>
+          </label>
           <span>收藏</span>
         </li>
         <li class="buy">
-          <span class="add-cart" @click="Select">加入购物车</span>
-          <span class="now-buy" @click="Select">立即购买</span>
+          <span class="add-cart" @click="Select(1)">加入购物车</span>
+          <span class="now-buy" @click="Select(2)">立即购买</span>
         </li>
       </ul>
     </div>
@@ -92,7 +94,7 @@
       <div class="Spec">
         <!-- 上面图片 价格 库存 -->
         <div class="pic_list">
-          <img v-if="list.pic!=undefined" :src="`http://kirito7.applinzi.com/${list.pic}`" />
+          <img v-if="list.pic!=undefined" :src="`http://127.0.0.1:7700/${list.pic}`" />
           <div v-text="`￥${priceAll}`"></div>
           <div class="Repertory">
             库存
@@ -131,31 +133,23 @@ export default {
   data() {
     // name:"Tabbar"
     return {
+      //收藏更改颜色
+      isSelected: false,
       active: "tab1",
       list: {},
       // 显示规格
       show_spec: false,
       have_spec: "",
+      // 第二次以后点击加入购物车或结算可以加入购物车或结算
+      add_ok: 0,
+      // 有什么规格的名称
+      have_spec_list: [],
       // 最低~最高价钱
       priceAll: "",
       // 库存
       repertoryAll: "",
-      // 规格的数据
-      spec_list: [],
-      // 尺寸的数据
-      size_list: [],
-      // 状态的数据
-      is_state_list: [],
-      // 款式的数据
-      style_list: [],
-      // 水果的数据
-      fruit_list: [],
-      // 其他规格数据
-      else_message_list: [],
       // 选中了那个规格
       spec_active: false,
-      // 尺寸的数据
-      size_list: [],
       // 多规格 数据
       spec_lists: {
         //所有的规格可能情况都在这个数组里
@@ -169,7 +163,11 @@ export default {
       // 加入购物车商品数量
       number: 1,
       // 是否有该商品的详情
-      show: true
+      show: true,
+      // 跳到首页
+      toIndex: false,
+      // 跳到购物车
+      toCart: false
     };
   },
   props: ["pid"],
@@ -177,20 +175,68 @@ export default {
     this.load();
   },
   methods: {
+    // 点击改变收藏的颜色
+    isChange() {
+      //获取登录的用户id
+      this.uid = this.$store.getters.getUserId;
+      if (this.uid) {
+        this.isSelected = !this.isSelected;
+      }else{
+        this.$toast("请先登录")
+      }
+      if (this.isSelected == true) {
+        // 选中收藏
+        console.log("选中");
+        if (this.uid) {
+          this.axios
+            .get("/product/save", {
+              params: { uid: this.uid, pid: this.pid, status: 1 }
+            })
+            .then(result => {
+              console.log(result);
+            });
+        } else {
+          // 没登录就给提示
+          this.$toast("请先登录");
+        }
+      } else {
+        // 取消收藏
+        console.log("未选中");
+        if (this.uid) {
+          this.axios
+            .get("/product/cancel", { params: { uid: this.uid,pid:this.pid} })
+            .then(result => {
+              console.log(result);
+            });
+        }
+      }
+    },
     load() {
       this.axios
         .get("/product/details", { params: { pid: this.pid } })
         .then(result => {
-          console.log(result.data.code);
+          // console.log(result.data.code);
           if (result.data.code == 200) {
             this.list = result.data.data.product[0];
             var spec = result.data.data.spec;
             this.spec_list = spec;
-            console.log(spec);
+            // console.log(spec);
             // 价钱的数组
             var priceArray = [];
             // 库存
             var Repertory = 0;
+            // 规格的数据
+            var spec_list = [];
+            // 尺寸的数据
+            var size_list = [];
+            // 状态的数据
+            var is_state_list = [];
+            // 款式的数据
+            var style_list = [];
+            // 水果的数据
+            var fruit_list = [];
+            // 其他规格数据
+            var else_message_list = [];
             // difference 需要的格式是  size,is_state,style,fruit,else_message
             for (var i = 0; i < spec.length; i++) {
               var str = "";
@@ -199,23 +245,23 @@ export default {
               // 取到每个规格的数据,并添加一个是否选中状态select
               spec[i].select = false;
               if (spec[i].size != null) {
-                this.size_list.push(spec[i]);
+                size_list.push(spec[i]);
                 str += spec[i].size + ",";
               }
               if (spec[i].is_state != "-1") {
-                this.is_state_list.push(spec[i]);
+                is_state_list.push(spec[i]);
                 str += spec[i].is_state + ",";
               }
               if (spec[i].style != null) {
-                this.style_list.push(spec[i]);
+                style_list.push(spec[i]);
                 str += spec[i].style + ",";
               }
               if (spec[i].fruit != null) {
-                this.fruit_list.push(spec[i]);
+                fruit_list.push(spec[i]);
                 str += spec[i].fruit + ",";
               }
               if (spec[i].else_message != null) {
-                this.else_message_list.push(spec[i]);
+                else_message_list.push(spec[i]);
                 str += spec[i].else_message;
               }
               // 去掉最后的","号 再赋值
@@ -233,24 +279,21 @@ export default {
             // 所有库存
             this.repertoryAll = Repertory;
             // 去掉数组中重复的,用于在网页中显示规格
-            this.is_state_list = this.deteleObject(
-              this.is_state_list,
-              "is_state"
-            );
-            this.size_list = this.deteleObject(this.size_list, "size");
-            this.style_list = this.deteleObject(this.style_list, "style");
-            this.fruit_list = this.deteleObject(this.fruit_list, "fruit");
-            this.else_message_list = this.deteleObject(
-              this.else_message_list,
+            is_state_list = this.deteleObject(is_state_list, "is_state");
+            size_list = this.deteleObject(size_list, "size");
+            style_list = this.deteleObject(style_list, "style");
+            fruit_list = this.deteleObject(fruit_list, "fruit");
+            else_message_list = this.deteleObject(
+              else_message_list,
               "else_message"
             );
 
             // 需要的数据格式
             this.spec_lists.difference = spec;
-            this.myList(this.size_list, "尺寸", "size");
-            this.myList(this.is_state_list, "状态", "is_state");
-            this.myList(this.style_list, "款式", "style");
-            this.myList(this.fruit_list, "水果", "fruit");
+            this.myList(size_list, "尺寸", "size");
+            this.myList(is_state_list, "状态", "is_state");
+            this.myList(style_list, "款式", "style");
+            this.myList(fruit_list, "水果", "fruit");
             // difference 需要的格式是  size,is_state,style,fruit,else_message
             for (var i in this.spec_lists.difference) {
               this.shopItemInfo[
@@ -272,6 +315,7 @@ export default {
               this.$router.push("/Index");
             });
           }
+          // console.log(this.spec_lists);
         });
     },
     // 去除数组里重复的有重复名称的对象
@@ -298,14 +342,27 @@ export default {
       }
     },
     // 点击出现选择规格
-    Select() {
-      var uid = sessionStorage.getItem("uid");
-      if (uid != undefined) {
+    Select(n) {
+      var uid = this.$store.getters.getUserId;
+      if (uid !="") {
         this.show_spec = true;
         var selectArr = this.selectArr;
         var shopItemInfo = this.shopItemInfo;
-        // 如果为登陆状态 加入购物车
-
+        // 有什么规格的名称
+        var specifications = this.spec_lists.specifications;
+        // 显示提示有没选中规格
+        this.add_ok += 1;
+        if (this.add_ok > 1) {
+          for (let i = 0; i < this.spec_lists.specifications.length; i++) {
+            if (selectArr[i] == undefined || selectArr[i] == "") {
+              this.$toast({
+                message: "请选择" + specifications[i].name,
+                duration: 1000
+              });
+              return;
+            }
+          }
+        }
         // 选中的规格
         var name = selectArr.toString();
         // 拿到对象的属性名
@@ -318,19 +375,27 @@ export default {
             if (this.number > shopItemInfo[key].repertory) {
               this.$toast("库存不足");
             } else {
-              this.axios
-                .post(
-                  "/cart/add_cart",
-                  `user_id=${uid}&product_id=${this.pid}&sid=${sid}&count=${this.number}`
-                )
-                .then(result => {
-                  console.log(result.data);
-                  if (result.data.code != 400) {
-                    this.$toast("加入购物车成功");
-                  } else {
-                    this.$toast("加入购物车失败");
-                  }
-                });
+              // 加入购物车
+              if (n == 1) {
+                this.axios
+                  .post(
+                    "/cart/add_cart",
+                    `user_id=${uid}&product_id=${this.pid}&sid=${sid}&count=${this.number}`
+                  )
+                  .then(result => {
+                    // console.log(result.data);
+                    if (result.data.code != 400) {
+                      this.$toast({
+                        message: "加入购物车成功",
+                        duration: 1000
+                      });
+                    } else {
+                      this.$toast("加入购物车失败");
+                    }
+                  });
+              } else if (n == 2) {
+                this.$router.push("/Close");
+              }
             }
           }
         }
@@ -341,6 +406,7 @@ export default {
     // 点击遮罩层退出选择规格选择
     Cancel() {
       this.show_spec = false;
+      this.add_ok = 0;
     },
     // 点击选中规格后变成选中状态
     selectState(item, i, index) {
@@ -414,21 +480,24 @@ export default {
         this.number = 1;
       }
       this.changePrice();
+    },
+    // 跳转事件
+    To(n) {
+      if (n == "Index") {
+        this.toIndex = true;
+        this.$router.push("/Index");
+      } else if (n == "Cart") {
+        this.toCart = true;
+        this.$router.push("/Index");
+      }
+    },
+    save() {
+      console.log(111);
     }
   },
   watch: {
     $route() {
       // 清空前一次的值
-      // 尺寸的数据
-      this.size_list = [];
-      // 状态的数据
-      this.is_state_list = [];
-      // 款式的数据
-      this.style_list = [];
-      // 水果的数据
-      this.fruit_list = [];
-      // 其他规格数据
-      this.else_message_list = [];
       this.spec_lists = {
         difference: [],
         specifications: []
@@ -439,11 +508,26 @@ export default {
       this.show_spec = false;
       this.number = 1;
       this.show = true;
+      this.add_ok = 0;
       this.load();
     }
   },
   beforeRouteLeave(to, from, next) {
-    console.log("离开");
+    // console.log("离开");
+    if (this.toIndex) {
+      if (to.name === "Index") {
+        to.query.temp = "Index";
+      }
+      this.toIndex = false;
+    }
+    if (this.toCart) {
+      if (to.name === "Index") {
+        to.query.temp = "Cart";
+      }
+      this.toCart = false;
+    }
+
+    // if(to.)
     next();
   }
 };
@@ -460,22 +544,26 @@ export default {
   position: fixed;
   right: 0.6rem;
   top: 1.8rem;
+  font-size: 20px;
 }
 .caption {
   width: 100%;
-  padding: 0.35rem 0;
+  padding: 10px 0 5px 0;
 }
+
 .caption i.iconfont {
+  position: relative;
+  top: -3px;
   float: left;
-  font-size: 0.65rem;
+  font-size: 28px;
   text-indent: 0.26rem;
   font-weight: bolder;
 }
+
 .caption-info {
-  font-size: 0.65rem;
+  font-size: 20px;
   text-align: center;
   margin-right: 0.63rem;
-  line-height: 0.6rem;
 }
 .clearfix::before {
   content: "";
@@ -515,14 +603,17 @@ i {
 }
 .intro .fengxiang {
   text-align: center;
-  margin: 0.4rem 0.4rem 0 0;
+  margin: 0.3rem 0.4rem 0 0;
   float: right;
+}
+.fengxiang .iconfont {
+  font-size: 25px;
 }
 .intro .fengxiang p {
   margin-top: 0.1rem;
   letter-spacing: 1px;
   color: #585757;
-  font-size: 0.21rem;
+  font-size: 13px;
 }
 .intro .intro-head span {
   margin: 0.3rem 0;
@@ -530,13 +621,13 @@ i {
   display: block;
 }
 .intro .intro-head span.price {
-  color: brown;
+  color: #ed143d;
 }
 .countAll {
   text-align: center;
 }
 .countAll span {
-  font-size: 0.21rem;
+  font-size: 13px;
   color: #585757;
 }
 .countAll span:nth-child(1) {
@@ -559,6 +650,7 @@ i {
   justify-content: space-around;
   display: flex;
   background-color: #f9f9f9;
+  /* font-size:16px !important; */
 }
 .toggle {
   /* background: #fff; */
@@ -566,7 +658,7 @@ i {
   border-radius: 0;
   outline: none;
   color: #333;
-  font-size: 0.5rem;
+  font-size: 0.47rem;
   height: 50px;
 }
 .Tabbar .active {
@@ -592,8 +684,14 @@ i {
   text-align: center;
 }
 .gat-nav li.li-nav {
-  margin: 0.27rem 0 0 0.4rem;
-  font-size: 0.1rem;
+  margin: 0.1rem 0 0 0.4rem;
+  /* font-size: 0.2rem; */
+}
+.li-nav i {
+  font-size: 25px;
+}
+.li-nav span {
+  font-size: 12px;
 }
 .gat-nav li i {
   margin-bottom: 0.08rem;
@@ -738,5 +836,8 @@ i {
   color: #fff;
   /* 阻止点击事件 */
   pointer-events: none;
+}
+.actived {
+  color: #ed143d;
 }
 </style>

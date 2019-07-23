@@ -1,5 +1,9 @@
 <template>
   <div class="page-navbar">
+    <div class="caption">
+      <i class="iconfont" @click="$router.go(-1)">&#xe732;</i>
+      <h1 class="caption-info">结算</h1>
+    </div>
     <mt-navbar class="page-part" v-model="selected">
       <mt-tab-item id="1">
         <span class="top_btn">同城配送</span>
@@ -31,7 +35,7 @@
           <mt-field label="备注："></mt-field>
         </div>
         <div class="product" v-for="(item,index) of list" :key="index">
-          <img :src="`http://kirito7.applinzi.com/${item.pic}`" alt />
+          <img :src="`http://127.0.0.1:7700/${item.pic}`" alt />
           <span class="product_title" v-text="item.pname"></span>
           <span class="product_details">
             <span :class="{none:item.is_state=='-1'}" v-text="`状态:\n${item.is_state}`"></span>
@@ -78,7 +82,7 @@
           <mt-field label="备注："></mt-field>
         </div>
         <div class="product" v-for="(item,index) of list" :key="index">
-          <img :src="`http://kirito7.applinzi.com/${item.pic}`" alt />
+          <img :src="`http://127.0.0.1:7700/${item.pic}`" alt />
           <span class="product_title" v-text="item.pname"></span>
           <span class="product_details">
             <span :class="{none:item.is_state=='-1'}" v-text="`状态:\n${item.is_state}`"></span>
@@ -104,7 +108,7 @@
     </mt-tab-container>
     <div class="bottom">
       <span class="money">总计：¥268</span>
-      <label class="submit">提交订单</label>
+      <label class="submit" @click="submit_order">提交订单</label>
     </div>
   </div>
 </template>
@@ -115,33 +119,15 @@ export default {
       selected: "1",
       pickerValue: "",
       time: "",
-      list: [
-        {
-          pic: "images/product/64sd78f5465sda4110.jpg",
-          pname: "提拉米苏",
-          is_state: "-1",
-          size: "5寸",
-          fruit: "芒果",
-          else_message: null,
-          style: null,
-          count: 1,
-          price: 10
-        },
-        {
-          pic: "images/product/64sd78f5465sda4110.jpg",
-          pname: "提拉米苏",
-          is_state: "-1",
-          size: "5寸",
-          fruit: "芒果",
-          else_message: null,
-          style: null,
-          count: 1,
-          price: 10
-        }
-      ]
+      list: []
     };
   },
   created() {
+    if (this.$router.history.current.name == "Close") {
+      this.list = this.$router.history.current.query.data;
+      console.log(this.list)
+    }
+    // console.log(this.$router.history.current.query.data);
     var time = new Date();
     var year = time.getFullYear();
     var month = time.getMonth() + 1;
@@ -166,6 +152,42 @@ export default {
       second;
   },
   methods: {
+    //提交订单
+    submit_order(){
+      console.log("提交订单")
+      //遍历得到每一个商品的信息
+      for(var i of this.list){
+        var pid=i.pid;
+        var count=i.count;
+        //获取当前时间
+        var time=new Date();
+        //获取年
+        var year=time.getFullYear();
+        year=year.toString();
+        //获取月
+        var month=time.getMonth()+1;
+        if(month<10){
+          month=0+month.toString();
+        }
+        month=month.toString();
+        //获取日
+        var date=time.getDate();
+        date=date.toString();
+        //var order_time=year+month+date;
+        //console.log(order_time)
+        //随机取9个数
+        var arr=[];
+        for(var i=0;i<9;i++){
+          var index=Math.floor(Math.random()*10);
+          arr.push(index)
+        }
+        arr=arr.join("")
+        //订单号
+        var order_time=year+month+date+arr
+        console.log(order_time)
+      }
+      this.axios.get("/product/save_order",{params:{}})
+    },
     showDateTimePicker() {
       if (!this.dateTimePicker) {
         this.dateTimePicker = this.$createDatePicker({
@@ -209,7 +231,11 @@ export default {
     //     time: 1000
     //   }).show();
     // }
-  }
+  },
+  // beforeRouteEnter(to, from, next) {
+  //   console.log(to);
+  //   next();
+  // }
 };
 </script>
 <style scoped>
@@ -219,18 +245,37 @@ body {
 .none {
   display: none !important;
 }
-/* .page-navbar {
-} */
+.page-navbar {
+  margin-top: 10px;
+}
+/*头部*/
+.caption {
+  width: 100%;
+  /* padding: 0px 0 5px 0; */
+}
+.caption i.iconfont {
+  position: relative;
+  top: -3px;
+  float: left;
+  font-size: 28px;
+  text-indent: 0.26rem;
+  font-weight: bolder;
+}
+.caption-info {
+  font-size: 20px;
+  text-align: center;
+  margin-right: 0.63rem;
+}
 .page-part {
   border-bottom: 1px solid #ccc;
-  position: fixed;
-  top: 0;
+  position: relative;
+  /* top: 0px; */
   width: 100%;
   z-index: 1;
 }
 .box {
   margin-bottom: 55px;
-  margin-top: 50px;
+  margin-top: 0px;
 }
 .page-navbar .mint-tab-item-label {
   font-size: 16px;
