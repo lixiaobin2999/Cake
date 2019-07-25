@@ -9,7 +9,7 @@
     <div @click="To('Cart')" class="iconfont toCart">&#xe611;</div>
     <!-- 大图 -->
     <div class="largeImg">
-      <img v-if="list.pic!=undefined" :src="`http://127.0.0.1:7700/${list.pic}`" alt />
+      <img v-if="list.pic!=undefined" :src="`http://xiaoxuan.applinzi.com/${list.pic}`" alt />
     </div>
     <!-- 简介 -->
     <div class="intro">
@@ -55,16 +55,59 @@
       <mt-tab-container-item id="tab1">
         <img
           v-if="list.details_pic!=undefined"
-          :src="`http://127.0.0.1:7700/${list.details_pic}`"
+          :src="`http://xiaoxuan.applinzi.com/${list.details_pic}`"
           alt
         />
       </mt-tab-container-item>
       <mt-tab-container-item id="tab2" class="comment">
-        <mt-button size="small" @click.native.prevent="active = ''">全部</mt-button>
-        <mt-button size="small" @click.native.prevent="active = ''">有图</mt-button>
-        <mt-button size="small" @click.native.prevent="active = ''">好评</mt-button>
-        <mt-button size="small" @click.native.prevent="active = ''">中评</mt-button>
-        <mt-button size="small" @click.native.prevent="active = ''">差评</mt-button>
+        <div style="width:100%">
+          <ul class="review_ul">
+            <li class="active_li">
+              <span>全部</span>
+              <span>
+                (
+                <i>2</i>)
+              </span>
+            </li>
+            <li>
+              <span>有图</span>
+              <span>
+                (
+                <i>2</i>)
+              </span>
+            </li>
+            <li>
+              <span>好评</span>
+              <span>
+                (
+                <i>2</i>)
+              </span>
+            </li>
+            <li>
+              <span>中评</span>
+              <span>
+                (
+                <i>2</i>)
+              </span>
+            </li>
+            <li>
+              <span>差评</span>
+              <span>
+                (
+                <i>2</i>)
+              </span>
+            </li>
+          </ul>
+        </div>
+        <div
+          style="height:0.27rem;width:100%;background-color:#ddd;margin:0;position:absolute;top:50px;left:0;"
+        ></div>
+        <div class="review_div"></div>
+        <!-- <mt-button size="small" @click.native.prevent="review = ''">全部</mt-button>
+        <mt-button size="small" @click.native.prevent="review = ''">有图</mt-button>
+        <mt-button size="small" @click.native.prevent="review = ''">好评</mt-button>
+        <mt-button size="small" @click.native.prevent="review = ''">中评</mt-button>
+        <mt-button size="small" @click.native.prevent="review = ''">差评</mt-button>-->
       </mt-tab-container-item>
       <div style="height:500px;"></div>
     </mt-tab-container>
@@ -76,7 +119,11 @@
         </li>
         <li class="li-nav">
           <label for="input">
-            <i class="iconfont" :class="{actived:isSelected}" @click="isChange">&#xe608;</i>
+            <i
+              class="iconfont"
+              :class="{actived:isSelected==true&&save==1}"
+              @click="isChange"
+            >&#xe637;</i>
           </label>
           <span>收藏</span>
         </li>
@@ -94,7 +141,7 @@
       <div class="Spec">
         <!-- 上面图片 价格 库存 -->
         <div class="pic_list">
-          <img v-if="list.pic!=undefined" :src="`http://127.0.0.1:7700/${list.pic}`" />
+          <img v-if="list.pic!=undefined" :src="`http://xiaoxuan.applinzi.com/${list.pic}`" />
           <div v-text="`￥${priceAll}`"></div>
           <div class="Repertory">
             库存
@@ -167,7 +214,9 @@ export default {
       // 跳到首页
       toIndex: false,
       // 跳到购物车
-      toCart: false
+      toCart: false,
+      // 收藏的状态
+      save: 0
     };
   },
   props: ["pid"],
@@ -181,46 +230,45 @@ export default {
       this.uid = this.$store.getters.getUserId;
       if (this.uid) {
         this.isSelected = !this.isSelected;
-      }else{
-        this.$toast("请先登录")
+      } else {
+        this.$toast("请先登录");
+        return;
+      }
+      if (this.uid) {
+        this.save = this.save == 0 ? 1 : 0;
+        this.axios
+          .post("/product/save", `uid=${this.uid}&pid=${this.pid}`)
+          .then(result => {
+            // console.log(result);
+          });
+      } else {
+        // 没登录就给提示
+        this.$toast("请先登录");
       }
       if (this.isSelected == true) {
         // 选中收藏
-        console.log("选中");
-        if (this.uid) {
-          this.axios
-            .get("/product/save", {
-              params: { uid: this.uid, pid: this.pid, status: 1 }
-            })
-            .then(result => {
-              console.log(result);
-            });
-        } else {
-          // 没登录就给提示
-          this.$toast("请先登录");
-        }
+        // console.log("选中");
+        this.saveStatus = "已收藏";
       } else {
         // 取消收藏
-        console.log("未选中");
-        if (this.uid) {
-          this.axios
-            .get("/product/cancel", { params: { uid: this.uid,pid:this.pid} })
-            .then(result => {
-              console.log(result);
-            });
-        }
+        // console.log("未选中");
+        this.saveStatus = "收藏";
       }
     },
     load() {
+      var uid = this.$store.getters.getUserId;
       this.axios
-        .get("/product/details", { params: { pid: this.pid } })
+        .get("/product/details", { params: { uid: uid, pid: this.pid } })
         .then(result => {
           // console.log(result.data.code);
           if (result.data.code == 200) {
             this.list = result.data.data.product[0];
             var spec = result.data.data.spec;
             this.spec_list = spec;
-            // console.log(spec);
+            // console.log(result.data.data.save);
+            // 是否有收藏
+            this.save = result.data.data.save;
+            this.isSelected = this.save != 0 ? true : false;
             // 价钱的数组
             var priceArray = [];
             // 库存
@@ -344,7 +392,7 @@ export default {
     // 点击出现选择规格
     Select(n) {
       var uid = this.$store.getters.getUserId;
-      if (uid !="") {
+      if (uid != "") {
         this.show_spec = true;
         var selectArr = this.selectArr;
         var shopItemInfo = this.shopItemInfo;
@@ -365,10 +413,17 @@ export default {
         }
         // 选中的规格
         var name = selectArr.toString();
+        var data = [];
         // 拿到对象的属性名
         var obj_name = Object.keys(shopItemInfo);
         for (var key of obj_name) {
           if (name == key) {
+            // 给结算的数据
+            data.push(shopItemInfo[key]);
+            data[0].pid = this.list.pid;
+            data[0].pic = this.list.pic;
+            data[0].count = this.number;
+            // console.log(list);
             // console.log(key);
             // 该商品的规格  shopItemInfo[key].sid
             var sid = shopItemInfo[key].sid;
@@ -394,7 +449,12 @@ export default {
                     }
                   });
               } else if (n == 2) {
-                this.$router.push("/Close");
+                this.$router.push({
+                  path: "/Close",
+                  query: {
+                    data: data
+                  }
+                });
               }
             }
           }
@@ -407,6 +467,8 @@ export default {
     Cancel() {
       this.show_spec = false;
       this.add_ok = 0;
+      this.selectArr = [];
+      this.subIndex = [];
     },
     // 点击选中规格后变成选中状态
     selectState(item, i, index) {
@@ -490,9 +552,6 @@ export default {
         this.toCart = true;
         this.$router.push("/Index");
       }
-    },
-    save() {
-      console.log(111);
     }
   },
   watch: {
@@ -667,7 +726,7 @@ i {
 .comment {
   display: flex;
   justify-content: space-around;
-  padding-top: 0.4rem;
+  /* padding-top: 0.4rem; */
 }
 
 /* 底部导航 */
@@ -839,5 +898,29 @@ i {
 }
 .actived {
   color: #ed143d;
+}
+/* 评论 */
+.review_ul {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  height: 50px;
+  line-height: 50px;
+  border-top: 1px solid #ccc;
+}
+.review_ul > li {
+  width: 25%;
+  height: 50px;
+  text-align: center;
+}
+.active_li {
+  color: red;
+}
+.review_div {
+  position: absolute;
+  top: 55px;
+  background-color: #fff;
+  width: 100%;
+  height: 500px;
 }
 </style>

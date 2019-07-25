@@ -36,7 +36,7 @@
             <mt-swipe :auto="3000" :defaultIndex="0" :speed="800" :show-indicators="true">
               <mt-swipe-item v-for="(carousel,i) of carousel_list" :key="i">
                 <router-link :to="`/Details/${carousel.pid}`">
-                  <img :src="`http://127.0.0.1:7700/${carousel.img}`" style="height:200px" alt />
+                  <img :src="`http://xiaoxuan.applinzi.com/${carousel.img}`" alt />
                 </router-link>
               </mt-swipe-item>
             </mt-swipe>
@@ -62,18 +62,27 @@
               <span class="snack-title" v-text="series_name"></span>
               <router-link :to="`/ProductList/${cid}`" class="product-more">更多&gt;</router-link>
             </div>
-            <div class="snack-list clearfix" style="margin-bottom: 15px;">
-              <ul class="mylist">
+            <div class="snack-list clearfix">
+              <ul
+                class="mylist"
+                v-infinite-scroll="loadMore"
+                infinite-scroll-disabled="loading"
+                infinite-scroll-distance="10"
+                infinite-scroll-throttle-delay="false"
+                infinite-scroll-immediate-check="false"
+              >
                 <li class="snack-item" v-for="(item,i) of product_list" :key="i">
                   <router-link :to="`/Details/${item.pid}`">
-                    <img :src="`http://127.0.0.1:7700/${item.pic}`" alt />
+                    <img :src="`http://xiaoxuan.applinzi.com/${item.pic}`" alt />
                     <span class="title" v-text="item.pname"></span>
                     <span class="price" v-text="`￥${item.price}`"></span>
                   </router-link>
                 </li>
               </ul>
             </div>
-            <div style="height:1.464rem;"></div>
+            <cube-loading :size="40" v-show="loading"></cube-loading>
+            <div v-if="!toBottom" style="color:#555;font-size:16px;">已经到底了</div>
+            <div style="height:1.7rem;"></div>
             <!-- index -->
           </div>
         </mt-tab-container-item>
@@ -104,7 +113,7 @@
           <span slot="icon" class="iconfont myicon">&#xe611;</span>购物车
         </mt-tab-item>
         <mt-tab-item id="me">
-          <span slot="icon" class="iconfont myicon">&#xe615;</span>个人中心
+          <span slot="icon" class="iconfont myicon">&#xe609;</span>个人中心
         </mt-tab-item>
       </mt-tabbar>
     </div>
@@ -134,10 +143,33 @@ export default {
       // 系列名称
       series_name: "小食",
       // 公告动画
-      isRun: true
+      isRun: true,
+      // 数据当前页数
+      pno: 1,
+      // 数据每页的数量
+      pageSize: 6,
+      // 已经到底了
+      toBottom: true,
+      // 是否可以刷新
+      isload: false,
+      loading: false,
+      show: false
     };
   },
   created() {
+    this.axios.get("/index/carousel").then(result => {
+      this.carousel_list = result.data.data;
+    });
+    this.axios
+      .get("/index/index", {
+        params: { cid: this.cid, pno: this.pno, pageSize: this.pageSize }
+      })
+      .then(result => {
+        var list = result.data.data;
+        this.product_list = list;
+        this.series_name = list[0].cname;
+      });
+    this.loadMore();
     // console.log(this.scrollBehavior)
     // 屏幕可用区域变化时执行 (分类的高度需要与屏幕高度一样)
     this.resizeHeight = screen.availHeight;
@@ -149,25 +181,39 @@ export default {
         this.isRun = true;
       }, 10);
     });
-    // 获取后台数据显示 需要传入某系列的cid
-    var cid = this.cid;
-    this.axios.get("/index/index", { params: { cid: cid } }).then(result => {
-      // console.log(result.data.data);
-      var list = result.data.data;
-      this.carousel_list = list.carousel;
-      // this.product_list = list.product;
-      list.product.splice(list.product.length - 2);
-      this.product_list = list.product;
-      this.series_name = list.product[0].cname;
-    });
   },
   // 注册子组件
   components: {
-    classify: Classify,
+    Classify: Classify,
     cart: Cart,
     own: Own
   },
   methods: {
+    loadMore() {
+      if (this.isload == true) return;
+      this.loading = true;
+      setTimeout(() => {
+        // 获取后台数据显示 需要传入某系列的cid
+        var cid = this.cid;
+        this.pno++;
+        this.axios
+          .get("/index/index", {
+            params: { cid: cid, pno: this.pno, pageSize: this.pageSize }
+          })
+          .then(result => {
+            var list = result.data.data;
+            // console.log(list);
+            if (list == undefined) {
+              this.toBottom = false;
+              // this.$toast("已经到底了");
+              this.isload = true;
+            } else {
+              this.product_list = this.product_list.concat(list);
+            }
+          });
+        this.loading = false;
+      }, 2000);
+    },
     detail() {
       this.active = "myProduct";
     }
@@ -178,9 +224,8 @@ export default {
     }
   },
   beforeRouteEnter(to, from, next) {
-    console.log(to);
-    console.log(from);
-    // console.log(next)
+    // console.log(to);
+    // console.log(from);
     //判断是从哪个路由过来的，
     if (from.name == "Details" && to.query.temp == "Index") {
       // to.meta.keepAlive = false;
@@ -303,6 +348,11 @@ img {
 /* 轮播 */
 .mint-swipe {
   height: 200px !important;
+  width: 95%;
+  margin: 0 auto;
+  overflow: hidden;
+}
+.mint-swipe img {
   width: 100%;
 }
 /* classify */
@@ -322,17 +372,23 @@ img {
   display: flex;
   /* 换行 */
   flex-wrap: wrap;
-  justify-content: space-around;
+  /* 周抽起点对齐 */
+  justify-content: flex-start;
   width: 100%;
 }
 .mylist > li {
-  width: 33%;
+  /* width: 33.3%; */
+  width: 31.2%;
   margin-bottom: 0.2rem;
+  margin-right: 10px;
+}
+.mylist > li:nth-child(3n) {
+  margin-right: 0;
 }
 /* 图片 */
 .snack-item img {
-  /* width: 100%; */
-  width: 116px;
+  width: 100%;
+  /* width: 116px; */
   height: 116px;
 }
 .snack-list .snack-title {
@@ -388,5 +444,8 @@ img {
 /* 底部选项卡的高度 */
 .mint-tabbar.is-fixed {
   height: 1.464rem;
+}
+.cube-loading-spinners {
+  margin: 0 auto;
 }
 </style>

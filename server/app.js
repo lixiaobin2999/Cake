@@ -16,11 +16,17 @@ const detailsRouter = require("./routes/details");
 // 导入cart路由器 购物车
 const cartRouter = require("./routes/cart");
 
+const avatarRouter = require("./routes/avatar");
+
 // 创建服务器
 var server = express();
 
 // 设置端口
-server.listen(7700);
+server.listen(5050);
+
+// 上传文件的限制大小
+server.use(bodyParser.json({ limit: '50mb' }));
+server.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 // 使用cors中间件 解决跨域
 server.use(cors({
@@ -54,3 +60,5 @@ server.use("/user", loginRouter);
 server.use("/product", detailsRouter);
 
 server.use("/cart", cartRouter);
+
+server.use("/avatar", avatarRouter);

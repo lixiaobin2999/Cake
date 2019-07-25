@@ -29,6 +29,9 @@ export default {
       if (!phone) {
         this.$toast("请输入合法手机号");
         return;
+      } else if (reg.test(phone) == false) {
+        this.$toast("手机号格式不正确");
+        return;
       }
       if (reg.test(phone) == true) {
         this.code = "";
@@ -36,7 +39,43 @@ export default {
         //验证码的长度
         var codeLength = 4;
         //随机数
-        var random = new Array(0,1,2,3,4,5,6,7,8,9,"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"
+        var random = new Array(
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          "A",
+          "B",
+          "C",
+          "D",
+          "E",
+          "F",
+          "G",
+          "H",
+          "I",
+          "J",
+          "K",
+          "L",
+          "M",
+          "N",
+          "O",
+          "P",
+          "Q",
+          "R",
+          "S",
+          "T",
+          "U",
+          "V",
+          "W",
+          "X",
+          "Y",
+          "Z"
         );
         for (var i = 0; i < codeLength; i++) {
           //取得随机数的索引（0~35）

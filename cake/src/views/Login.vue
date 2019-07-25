@@ -196,7 +196,6 @@ export default {
             // console.log(result.data);
             if (result.data.code == 200) {
               var uid = result.data.data[0].uid;
-              console.log(result)
               sessionStorage.setItem("uid", uid);
               // 跳转主页
               this.$router.push("/Index");

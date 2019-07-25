@@ -41,11 +41,13 @@ router.get("/series", (req, res) => {
 
 // 商品详情的路由
 router.get("/details", (req, res) => {
+  var uid = req.query.uid;
   // 商品的id
   var pid = req.query.pid;
   var output = {
     product: [],
-    spec: []
+    spec: [],
+    save: 0
   };
 
   if (!pid) {
@@ -69,7 +71,8 @@ router.get("/details", (req, res) => {
           // 获取商品详情的信息
           var sql = `SELECT cake_product.pid,pname,price,pic,sales_volume,
                     read_num,details_pic FROM cake_product INNER JOIN 
-                    cake_pic ON cake_product.pid=? AND cake_pic.pid=?`;
+                    cake_pic ON cake_product.pid=? AND cake_product.seq_state=1 
+                    AND cake_pic.pid=?`;
           pool.query(sql, [pid, pid], (err, result) => {
             if (err) throw err;
             output.product = result;
@@ -81,7 +84,22 @@ router.get("/details", (req, res) => {
             pool.query(sql, [pid, pid], (err, result) => {
               if (err) throw err;
               output.spec = result;
-              res.send({ code: 200, data: output });
+              // 获取收藏
+              if (!uid) {
+                res.send({ code: 200, data: output });
+              } else {
+                var sql = "SELECT status FROM user_save WHERE uid=? AND pid=?";
+                pool.query(sql, [uid, pid], (err, result) => {
+                  if (err) throw err;
+                  if (result.length > 0) {
+                    // console.log(result[0].status)
+                    output.save = result[0].status;
+                    res.send({ code: 200, data: output });
+                  } else {
+                    res.send({ code: 200, data: output });
+                  }
+                })
+              }
             })
           });
         }
@@ -125,11 +143,11 @@ router.get("/keyword", (req, res) => {
     if (err) throw err;
     res.send(result)
     return;
-    // console.log(result)
+    console.log(result)
   })
   // 搜索栏输入不为空的数值,存到后台搜索历史表中
   if (pname) {
-    var uid=req.query.uid;
+    var uid = req.query.uid;
     var sql2 = `INSERT INTO user_search VALUES(NULL,?,?)`;
     pool.query(sql2, [uid, pname], (err, result) => {
       if (err) throw err;
@@ -153,76 +171,113 @@ router.get("/history", (req, res) => {
 })
 
 //清空搜索历史记录
-router.get("/clearhis",(req,res)=>{
-  var uid=req.query.uid;
-  var sql=`DELETE FROM user_search WHERE uid=?`;
-  pool.query(sql,[uid],(err,result)=>{
-    if(err) throw err;
+router.get("/clearhis", (req, res) => {
+  var uid = req.query.uid;
+  var sql = `DELETE FROM user_search WHERE uid=?`;
+  pool.query(sql, [uid], (err, result) => {
+    if (err) throw err;
     res.send(result)
   })
 })
 
-//收藏
-router.get("/save",(req,res)=>{
-  var uid=req.query.uid;
-  var pid=req.query.pid;
-  var status=req.query.status;
-  var sql=`INSERT INTO user_save VALUES(NULL,?,?,?)`;
-  pool.query(sql,[uid,pid,status],(err,result)=>{
-    if(err) throw err;
-    res.send(result)
-  })
-})
+// 收藏
+router.post("/save", (req, res) => {
+  var uid = req.body.uid;
+  var pid = req.body.pid;
 
-//取消收藏
-router.get("/cancel",(req,res)=>{
-  var uid=req.query.uid;
-  var pid=req.query.pid;
-  var sql=`UPDATE user_save SET status=0 WHERE uid=? AND pid=?`;
-  pool.query(sql,[uid,pid],(err,result)=>{
-    if(err) throw err;
-    res.send(result)
+  if (!uid) {
+    res.send({ code: 400, msg: "没有登录" })
+    return;
+  }
+
+  var sql1 = "SELECT status FROM user_save WHERE uid=? AND pid=?";
+  pool.query(sql1, [uid, pid], (err, result) => {
+    if (err) throw err;
+    if (result.length > 0) {
+      var status = result[0].status == 0 ? 1 : 0;
+      var sql2 = `UPDATE user_save SET status=? WHERE uid=? AND pid=?`
+      pool.query(sql2, [status, uid, pid], (err, result) => {
+        if (err) throw err;
+        res.send({ code: 200, msg: "修改收藏状态成功" });
+      })
+    } else {
+      var sql3 = `INSERT INTO user_save VALUES(NULL,?,?,1)`;
+      pool.query(sql3, [uid, pid], (err, result) => {
+        if (err) throw err;
+        if (result.affectedRows > 0) {
+          res.send({ code: 200, msg: "创建收藏状态为1成功" });
+        } else {
+          res.send({ code: 400, msg: "创建收藏失败" });
+        }
+      })
+    }
   })
+
 })
 
 //收藏页
-router.get("/save_list",(req,res)=>{
-  var uid=req.query.uid;
-  var sql=`select p.pname, p.price, p.pic from cake_product p left join user_save s on p.pid = s.pid WHERE uid=? ORDER BY s.sid`;
-  pool.query(sql,[uid],(err,result)=>{
-    if(err) throw err;
+router.get("/save_list", (req, res) => {
+  var uid = req.query.uid;
+  var sql = `select p.pname, p.price, p.pic from cake_product p left join user_save s on p.pid = s.pid WHERE uid=? ORDER BY s.sid`;
+  pool.query(sql, [uid], (err, result) => {
+    if (err) throw err;
     res.send(result)
-  }) 
+  })
 })
+
 
 //提交订单
-router.get("/order",(req,res)=>{
-  console.log(req.query)
-  var user_id=req.query.user_id;
-  var status=req.query.status;
-  var order_time=req.query.order_time;
-  var sql=`INSERT INTO cake_order VALUES(NULL,?,NULL,?,?,NULL,NULL,NULL)`;
-  pool.query(sql,[user_id,status,order_time],(err,result)=>{
-    if(err) throw err;
+router.get("/order", (req, res) => {
+  var order_id = req.query.order_id;
+  var product_id = req.query.product_id;
+  var count = req.query.count;
+  var difference = req.query.difference;
+  var sql = `INSERT INTO cake_order_detail VALUES(NULL,?,?,?,?)`;
+  pool.query(sql, [order_id, product_id, count, difference], (err, result) => {
+    if (err) throw err;
     res.send(result)
   })
 })
+router.get("/user_order", (req, res) => {
+  var user_id = req.query.user_id;
+  var order_id = req.query.order_id;
+  var status = req.query.status;
+  var order_time = req.query.order_time;
+  var sql = `INSERT INTO cake_order VALUES(NULL,?,?,NULL,?,?,NULL,NULL,NULL)`;
+  pool.query(sql, [user_id, order_id, status, order_time], (err, result) => {
+    if (err) throw err;
+    res.send(result)
+  })
+})
+
+
 
 //订单页
-router.get("/order_list",(req,res)=>{
-  var user_id=req.query.user_id;
-  var sql=`SELECT * FROM cake_order WHERE user_id=?`;
-  pool.query(sql,[user_id],(err,result)=>{
-    if(err) throw err;
-    res.send(result)
+// 订单页面获取订单信息
+router.get("/order_list", (req, res) => {
+  var uid = req.query.uid;
+
+  if (!uid) {
+    res.send({ code: 400, msg: "还没有登录" });
+    return;
+  }
+  var sql = `SELECT user_id,cake_order.order_id,status,order_time,count,product_id,difference,pic,
+cake_spec.price,size,is_state,style,pname,fruit,else_message FROM ((cake_order INNER JOIN
+cake_order_detail ON cake_order.user_id=? AND cake_order.order_id=
+cake_order_detail.order_id) INNER JOIN cake_product ON
+cake_order_detail.product_id=cake_product.pid) INNER JOIN 
+cake_spec ON cake_spec.sid=cake_product.cid ORDER BY 
+cake_order.oid  DESC`;
+  pool.query(sql, [uid], (err, result) => {
+    if (err) throw err;
+    if (result.length > 0) {
+      res.send({ code: 200, data: result });
+    } else {
+      res.send({ code: 400, msg: "没有订单生成" });
+    }
   })
+
 })
-
-
-
-
-
-
 
 
 

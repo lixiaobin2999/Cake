@@ -11,7 +11,7 @@
     <div class="is_login" v-if="$store.getters.getUserId!=''" v-cloak>
       <div class="avatar_wrap">
         <router-link to="Infornation" class="logo">
-          <img src="../../public/images/avatar.png" alt />
+          <img :src="`http://xiaoxuan.applinzi.com/${pic}`" alt />
         </router-link>
       </div>
       <div class="info">
@@ -23,10 +23,10 @@
     <div class="order">
       <div class="own">
         <p class="section_title">我的订单</p>
-        <a href="/OrderForm">待付款</a>
-        <a href="/OrderForm">待发货</a>
-        <a href="/OrderForm">待收货</a>
-        <a href="/OrderForm">待评价</a>
+        <router-link to="/OrderForm">待付款</router-link>
+        <router-link to="/OrderForm">待发货</router-link>
+        <router-link to="/OrderForm">待收货</router-link>
+        <router-link to="/OrderForm">待评价</router-link>
       </div>
     </div>
     <div class="service">
@@ -35,7 +35,7 @@
         <a href="javascript:;" class="birth">生日助手</a>
         <a href="javascript:;" class="detail">个人资料</a>
         <a href="javascript:;" class="card">储值卡专享兑换券</a>
-        <a href="javascript:;" class="shoucang">我的收藏</a>
+        <router-link to="/Save" class="shoucang">我的收藏</router-link>
         <a href="javascript:;" class="online">在线客服</a>
         <a href="javascript:;" class="ticket">我的发票</a>
         <a href="javascript:;" class="our">关于我们</a>
@@ -47,7 +47,8 @@
 export default {
   data() {
     return {
-      uphone: ""
+      uphone: "",
+      pic: "images/avatar/avatar.png"
     };
   },
   created() {
@@ -57,11 +58,12 @@ export default {
     load() {
       this.$store.commit("setUserId");
       var uid = this.$store.getters.getUserId;
-      console.log(uid)
+      // console.log(uid)
       if (uid) {
         this.axios.post("/user/own", `uid=${uid}`).then(result => {
           // console.log(result.data)
           if (result.data.code != 400) {
+            this.pic = result.data.data[0].avatar;
             this.uphone = result.data.data[0].phone;
           }
         });
@@ -84,8 +86,7 @@ export default {
   activated() {
     // keepAlive(缓存)开启时 重新刷新数据
     this.load();
-  },
-  watch: {}
+  }
 };
 </script>
 <style scoped>
@@ -96,6 +97,7 @@ export default {
   background: #f5f5f5;
   position: fixed;
   top: -2%;
+  background-image: url("../../public/images/bcfa076fd26e7285e70c848ef0fb1a0.jpg");
 }
 .not_login {
   text-align: center;
@@ -167,10 +169,10 @@ export default {
   background: url(../../public/images/20190723190115.png) no-repeat center;
   background-size: 13rem 13rem;
   top: -9%;
-  left:24%;
+  left: 24%;
 }
 .own a:nth-of-type(1):before {
-  background-position: -26px -81px
+  background-position: -26px -81px;
 }
 .own a:nth-of-type(2):before {
   background-position: -99px -81px;
@@ -208,9 +210,10 @@ export default {
 .is_login {
   overflow: hidden;
   clear: both;
-  margin-top: 20px;
-  margin-left: 20px;
-  margin-bottom: 5%;
+  padding-top: 20px;
+  padding-left: 20px;
+  padding-bottom: 5%;
+  /* background-image: url("../../public/images/bcfa076fd26e7285e70c848ef0fb1a0.jpg"); */
 }
 .avatar_wrap {
   float: left;

@@ -32,7 +32,7 @@
     <div class="proList">
       <div class="pro-item" v-for="(item,i) of product_list" :key="i">
         <router-link :to="`/Details/${item.pid}`" style="position:relative;">
-          <img :src="`http://127.0.0.1:7700/${item.pic}`" alt />
+          <img :src="`http://xiaoxuan.applinzi.com/${item.pic}`" alt />
           <p class="repertory">
             <i class="iconfont">&#xe661;</i>&nbsp;
             <span v-text="item.read_num"></span>
@@ -65,7 +65,8 @@ export default {
       // 价格的选中
       activeSelect: [false, false],
       // 单数 上 复数 下
-      odd_even: 1
+      odd_even: 1,
+      nowIdex: 0
     };
   },
   props: ["cid"],
@@ -79,16 +80,18 @@ export default {
           if (result.data.code == 200) {
             this.product_list = result.data.data;
             this.list = result.data.data;
+            this.sort(this.nowIdex);
             // console.log(odd_even);
           } else {
-            this.$messagebox("", "没有该系列商品").then(action => {
-              this.$router.push("/Index");
-            });
+            // this.$messagebox("", "没有该系列商品").then(action => {
+            //   this.$router.push("/Index");
+            // });
+            this.list = [];
+            this.product_list = [];
           }
         });
     },
-    // 切换排序方式
-    selectActive(n) {
+    sort(n) {
       if (n == 2) {
         this.odd_even += 1;
         if (this.odd_even % 2 == 0) {
@@ -120,6 +123,11 @@ export default {
       if (n == 4) {
         this.product_list = this.orderingRule(this.list, "read_num", true);
       }
+    },
+    // 切换排序方式
+    selectActive(n) {
+      this.nowIdex = n;
+      this.sort(n);
       for (var i = 0; this.currentIndex.length; i++) {
         if (n == i) {
           this.currentIndex[i].isSelect = true;
@@ -172,10 +180,29 @@ export default {
     // this.isFirstEnter = true;
     this.load();
   },
-  watch: {
-    $route() {
-      this.load();
+  activated() {
+    this.load();
+    // this.selectActive(this.nowIdex);
+  },
+  beforeRouteEnter(to, from, next) {
+    // console.log(to)
+    //判断是从哪个路由过来的，
+    if (from.name == "Index" && to.query.temp == "Classify") {
+      // to.meta.keepAlive = false;
+      next(vm => {
+        vm.currentIndex = [
+          { isSelect: true },
+          { isSelect: false },
+          { isSelect: false },
+          { isSelect: false },
+          { isSelect: false }
+        ];
+        vm.activeSelect = [false, false];
+        vm.nowIdex = 0;
+      });
+      return;
     }
+    next();
   }
 };
 </script>

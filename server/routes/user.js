@@ -5,6 +5,8 @@ const pool = require("../pool");
 // 创建路由器
 var router = express.Router();
 
+const fs = require("fs");
+
 // 用户注册 有正则验证
 router.post("/reg", (req, res) => {
   var phone = req.body.phone;
@@ -65,7 +67,6 @@ router.post("/login", (req, res) => {
     if (result.length > 0) {
       // session 的登陆id
       req.session.uid = result[0].uid;
-      console.log(result)
       console.log(req.session.uid)
       res.send({ code: 200, data: result });
     } else {
@@ -122,15 +123,47 @@ router.post("/set", (req, res) => {
   var real_name = req.body.real_name;
   var gender = req.body.gender;
   var birthday = req.body.birthday;
-  var sql = `UPDATE cake_user SET real_name=?,gender=?,birthday=? WHERE uid=?`
-  pool.query(sql, [real_name, gender, birthday, uid], (err, result) => {
+  var imgData = decodeURIComponent(req.body.imgData);
+  var phone = req.body.phone;
+  // console.log(imgData == "null")
+
+
+
+
+
+  var sql = "SELECT avatar FROM cake_user WHERE uid=?"
+  pool.query(sql, [uid], (err, result) => {
     if (err) throw err;
-    if (result.affectedRows > 0) {
-      res.send({ code: 200, data: result });
-    } else {
-      res.send({ code: 400, msg: "保存失败" })
+    if (result.length > 0) {
+      var url = imgData == "null" ? result[0].avatar : `images/avatar/${phone}.png`;
+
+      var sql = `UPDATE cake_user SET real_name=?,gender=?,birthday=?,avatar=? 
+  WHERE uid=?`;
+      pool.query(sql, [real_name, gender, birthday, url, uid], (err, result) => {
+        if (err) throw err;
+        if (result.affectedRows > 0) {
+          if (imgData == "null") {
+            res.send({ code: 200, data: result });
+          } else {
+            // 保存图片
+            var base64Data = imgData.replace(/^data:image\/\w+;base64,/, "");
+            // console.log(base64Data)
+            var dataBuffer = new Buffer(base64Data, 'base64');
+            fs.writeFile(`public/images/avatar/${phone}.png`, dataBuffer, function (err) {
+              if (err) {
+                res.send(err);
+              } else {
+                res.send({ code: 200, data: result });
+              }
+            });
+          }
+        } else {
+          res.send({ code: 400, msg: "保存失败" })
+        }
+      })
     }
   })
+
 })
 
 

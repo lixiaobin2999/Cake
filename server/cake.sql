@@ -9,7 +9,7 @@ CREATE TABLE cake_user(
   uname VARCHAR(50),                                          #用户名
   phone VARCHAR(16),                                          #手机号(登陆的账号)
   upwd VARCHAR(32),                                           #登陆密码
-  avatar VARCHAR(128) DEFAULT "默认一张登陆后的头像",           #头像
+  avatar VARCHAR(128) DEFAULT "images/avatar/avatar.png",     #头像
   real_name VARCHAR(50),                                      #真实姓名
   birthday VARCHAR(32),                                              #生日日期
   integral INT DEFAULT 0,                                     #积分(默认开始为0)
@@ -89,22 +89,24 @@ CREATE TABLE user_save(
 
 /**用户订单**/
 CREATE TABLE cake_order(
-  oid INT PRIMARY KEY AUTO_INCREMENT,
-  user_id INT,                                            #用户编号
-  address_id INT,                                         #收货地址id
-  status INT,                                             #订单状态(1等待付款,2等待发货,3运输中,4已签收,5已取消)
-  order_time BIGINT,                                      #下单时间
-  pay_time BIGINT,                                        #付款时间
-  deliver_time BIGINT,                                    #发货时间
-  received_time BIGINT                                    #签收时间
-)AUTO_INCREMENT=10000000;                                 #从10000000开始自增
+oid INT PRIMARY KEY AUTO_INCREMENT,
+user_id INT,             #用户编号
+order_id BIGINT,        #订单编号
+address_id INT,         #收货地址id
+status INT,           #订单状态(1等待付款,2等待发货,3运输中,4已签收,5已取消)
+order_time BIGINT,   #下单时间
+pay_time BIGINT,     #付款时间
+deliver_time BIGINT,    #发货时间
+received_time BIGINT    #签收时间
+);
 
 /**用户订单**/
 CREATE TABLE cake_order_detail(
-  did INT PRIMARY KEY AUTO_INCREMENT,
-  order_id INT,                                           #订单编号
-  product_id INT,                                         #产品编号
-  count INT                                               #购买数量
+did INT PRIMARY KEY AUTO_INCREMENT,
+order_id BIGINT, #订单编号
+product_id INT, #产品编号
+count INT, #购买数量
+difference INT  #商品规格
 );
 
 /**收货地址信息**/

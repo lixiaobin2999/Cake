@@ -15,13 +15,18 @@ Vue.use(MintUI);
 import Cube from 'cube-ui'
 Vue.use(Cube)
 
+Vue.prototype.bus = new Vue;
+
+// import axios from './axios'
+// Vue.use(axios);
+
 import axios from 'axios'
 Vue.prototype.axios = axios;
 // 配置axios发送请求时保存session信息
 axios.defaults.withCredentials = true
 // 配置axios基础路径  http://kirito7.applinzi.com
-// axios.defaults.baseURL = "http://kirito7.applinzi.com"
-axios.defaults.baseURL = "http://127.0.0.1:7700"
+axios.defaults.baseURL = "http://xiaoxuan.applinzi.com"
+// axios.defaults.baseURL = "http://127.0.0.1:7700"
 
 
 Vue.config.productionTip = false

@@ -35,7 +35,7 @@
           <mt-field label="备注："></mt-field>
         </div>
         <div class="product" v-for="(item,index) of list" :key="index">
-          <img :src="`http://127.0.0.1:7700/${item.pic}`" alt />
+          <img :src="`http://xiaoxuan.applinzi.com/${item.pic}`" alt />
           <span class="product_title" v-text="item.pname"></span>
           <span class="product_details">
             <span :class="{none:item.is_state=='-1'}" v-text="`状态:\n${item.is_state}`"></span>
@@ -82,7 +82,7 @@
           <mt-field label="备注："></mt-field>
         </div>
         <div class="product" v-for="(item,index) of list" :key="index">
-          <img :src="`http://127.0.0.1:7700/${item.pic}`" alt />
+          <img :src="`http://xiaoxuan.applinzi.com/${item.pic}`" alt />
           <span class="product_title" v-text="item.pname"></span>
           <span class="product_details">
             <span :class="{none:item.is_state=='-1'}" v-text="`状态:\n${item.is_state}`"></span>
@@ -123,11 +123,12 @@ export default {
     };
   },
   created() {
+    // 获取用户id
+    this.uid = this.$store.getters.getUserId;
     if (this.$router.history.current.name == "Close") {
       this.list = this.$router.history.current.query.data;
-      console.log(this.list)
+      console.log(this.list);
     }
-    // console.log(this.$router.history.current.query.data);
     var time = new Date();
     var year = time.getFullYear();
     var month = time.getMonth() + 1;
@@ -153,40 +154,65 @@ export default {
   },
   methods: {
     //提交订单
-    submit_order(){
-      console.log("提交订单")
-      //遍历得到每一个商品的信息
-      for(var i of this.list){
-        var pid=i.pid;
-        var count=i.count;
-        //获取当前时间
-        var time=new Date();
-        //获取年
-        var year=time.getFullYear();
-        year=year.toString();
-        //获取月
-        var month=time.getMonth()+1;
-        if(month<10){
-          month=0+month.toString();
-        }
-        month=month.toString();
-        //获取日
-        var date=time.getDate();
-        date=date.toString();
-        //var order_time=year+month+date;
-        //console.log(order_time)
-        //随机取9个数
-        var arr=[];
-        for(var i=0;i<9;i++){
-          var index=Math.floor(Math.random()*10);
-          arr.push(index)
-        }
-        arr=arr.join("")
-        //订单号
-        var order_time=year+month+date+arr
-        console.log(order_time)
+    submit_order() {
+      console.log("提交订单");
+      //获取当前时间
+      var time = new Date();
+      var u_order_time = time.getTime();
+      //获取年
+      var year = time.getFullYear();
+      year = year.toString();
+      //获取月
+      var month = time.getMonth() + 1;
+      if (month < 10) {
+        month = 0 + month.toString();
       }
-      this.axios.get("/product/save_order",{params:{}})
+      month = month.toString();
+      //获取日
+      var date = time.getDate();
+      date = date.toString();
+      //var order_time=year+month+date;
+      //console.log(order_time)
+      //随机取9个数
+      var arr = [];
+      for (var i = 0; i < 9; i++) {
+        var index = Math.floor(Math.random() * 10);
+        arr.push(index);
+      }
+      arr = arr.join("");
+      //订单号
+      var order_time = year + month + date + arr;
+      console.log(order_time);
+      //遍历得到每一个商品的信息
+      for (var i of this.list) {
+        console.log(i);
+        console.log(i.sid);
+        // 结算的商品生成同一个订单号
+        this.axios
+          .get("/product/order", {
+            params: {
+              product_id: i.pid,
+              count: i.count,
+              order_id: order_time,
+              difference: i.sid
+            }
+          })
+          .then(result => {
+            console.log(result);
+            this.$router.push("/OrderForm");
+          });
+      }
+      // 生成一个用户订单
+      this.axios("/product/user_order", {
+        params: {
+          user_id: this.uid,
+          status: 1,
+          order_time: u_order_time,
+          order_id: order_time
+        }
+      }).then(result => {
+        console.log(result);
+      });
     },
     showDateTimePicker() {
       if (!this.dateTimePicker) {
@@ -231,7 +257,7 @@ export default {
     //     time: 1000
     //   }).show();
     // }
-  },
+  }
   // beforeRouteEnter(to, from, next) {
   //   console.log(to);
   //   next();

@@ -13,6 +13,7 @@ import ProductList from './views/ProductList.vue'
 import ResetPwd from './views/ResetPwd.vue'
 import OrderForm from './views/OrderForm.vue'
 import Save from './views/Save'
+import Refresh from './views/Refresh.vue'
 
 Vue.use(Router)
 
@@ -100,13 +101,18 @@ export default new Router({
       component: OrderForm
     },
     {
-      path:'/Save',
-      name:"Save",
-      component:Save
+      path: '/Save',
+      name: "Save",
+      component: Save
     },
+    {
+      path: '/Refresh',
+      name: 'Refresh',
+      component: Refresh
+    }
   ],
   // 滚动行为
-  mode: 'history',
+  // mode: 'history',
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {
       // 返回历史是返回上一次的高度

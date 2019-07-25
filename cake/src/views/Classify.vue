@@ -5,7 +5,9 @@
       <span class="iconfont sousuo" @click="$router.push('/Search')">&#xe65f;&nbsp;搜索</span>
       <div style="background:#ddd;height:1px;width:100%;margin:12px 0"></div>
     </div>
+    <!-- <h1>dsadsa</h1> -->
     <!-- 左侧边栏 -->
+    <!-- <div></div> -->
     <div class="let-tabbar">
       <div class="left-panel">
         <cube-scroll>
@@ -23,7 +25,7 @@
         <ul v-if="!noClassify">
           <li v-for="(elem,i) of right_list" :key="i">
             <router-link :to="`/ProductList/${elem.cid}`" v-if="elem.series!='NULL'">
-              <img :src="`http://127.0.0.1:7700/${elem.pic}`" />
+              <img :src="`http://xiaoxuan.applinzi.com/${elem.pic}`" />
               <span v-text="elem.series"></span>
             </router-link>
           </li>
@@ -192,6 +194,7 @@ export default {
     background-color: #fff;
     top: 0;
     left: 0;
+    width: 100%;
   }
 
   li {

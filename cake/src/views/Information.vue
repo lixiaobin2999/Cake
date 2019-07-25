@@ -5,14 +5,24 @@
       <h1 class="no_wrap">个人信息</h1>
     </div>
     <div class="content">
-      <div class="logo" @click.stop="uploadHeadImg">
-        <img :src="pic" alt />
+      <div class="logo">
+        <label for="input">
+          <img :src="`http://xiaoxuan.applinzi.com/${pic}`" class="img" alt v-if="!imgSrc" />
+          <img v-show="imgSrc" :src="imgSrc" class="img" ref="img" />
+          <input
+            type="file"
+            ref="fileBtn"
+            style="display:none;"
+            id="input"
+            accept="image/*"
+            @change="uploadImg"
+          />
+        </label>
       </div>
-      <input type="file" @change="handleFile" class="hiddenInput" />
       <div class="same_style">
         <span class="item_info" v-text="`手机号:${phone}`"></span>
       </div>
-      <mt-field label="真实姓名:" v-model="real_name"></mt-field>
+      <mt-field label="昵称:" v-model="real_name"></mt-field>
       <div class="sex_info">
         性别:
         <label for="male">
@@ -46,7 +56,9 @@ export default {
       gender: "",
       birthday: "", //日期组件选中的值
       isFirstEnter: false, // 是否第一次进入，默认false
-      pic: "images/avatar.png"
+      pic: "images/avatar.png",
+      imgInfo: null,
+      imgSrc: null
     };
   },
   created() {
@@ -60,6 +72,7 @@ export default {
         this.real_name = result.data.data[0].real_name;
         this.real_name = this.real_name == null ? "" : this.real_name;
         this.gender = result.data.data[0].gender;
+        this.pic = result.data.data[0].avatar;
         if (this.gender == 1) {
           male.checked = true;
         } else if (this.gender == 0) {
@@ -75,20 +88,33 @@ export default {
     }
   },
   methods: {
-    // 打开图片上传
-    uploadHeadImg: function() {
-      this.$el.querySelector(".hiddenInput").click();
-    },
-    // 将头像显示
-    handleFile: function(e) {
-      let $target = e.target || e.srcElement;
-      let file = $target.files[0];
-      var reader = new FileReader();
-      reader.onload = data => {
-        let res = data.target || data.srcElement;
-        this.pic = res.result;
-      };
-      reader.readAsDataURL(file);
+    // 头像图片上传
+    async uploadImg() {
+      var that = this;
+      const inputFile = await this.$refs.fileBtn.files[0];
+      let res;
+      this.inputFile = inputFile;
+      if (this.inputFile) {
+        let inputFile = this.inputFile;
+        this.imgInfo = Object.assign({}, this.imgInfo, {
+          name: inputFile.name,
+          size: inputFile.size,
+          lastModifiedDate: inputFile.lastModifiedDate.toLocaleString()
+        });
+        const reader = new FileReader();
+        res = reader.readAsDataURL(this.inputFile);
+        reader.onloadend = function() {
+          // var strBase64 = reader.result.substring(84);
+          var strBase64 = reader.result.substring(0);
+          // console.log(strBase64);
+        };
+        reader.onload = function(e) {
+          // console.log(e);
+          that.imgSrc = this.result; // 注意:这里的this.result中,这个this不是vue实例,而是reader对象,所以之前用that接收vue示例  that.imgSrc
+        };
+      } else {
+        return;
+      }
     },
     jump() {
       this.$router.push("/Index");
@@ -129,13 +155,15 @@ export default {
       }
       this.birth2 = this.birth.replace(/[\u4e00-\u9fa5]/g, "-");
       this.birth2 = this.birth.split("T")[0];
+      // 图片base64编码
+      var key = encodeURIComponent(this.imgSrc);
       this.axios
         .post(
           "/user/set",
-          `uid=${uid}&real_name=${this.real_name}&gender=${this.gender}&birthday=${this.birth2}`
+          `uid=${uid}&real_name=${this.real_name}&gender=${this.gender}&birthday=${this.birth2}&phone=${this.phone}&imgData=${key}`
         )
         .then(result => {
-          // console.log(result);
+          console.log(result);
           if (result.data.code == 200) {
             this.$toast("保存成功");
           } else {
@@ -236,5 +264,10 @@ export default {
 }
 .mint-field .mint-cell-title {
   width: 1.8rem !important;
+}
+.logo img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
 }
 </style>

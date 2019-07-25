@@ -1,13 +1,13 @@
 <template>
   <div>
     <div class="caption">
-      <i class="iconfont" @click="$router.push('/Own')">&#xe732;</i>
+      <i class="iconfont" @click="$router.go(-1)">&#xe732;</i>
       <h1 class="caption-info">我的收藏</h1>
     </div>
     <div class="proList">
       <div class="pro-item" v-for="(item,i) of save_list" :key="i">
         <router-link :to="`/Details/${item.pid}`" style="position:relative;">
-          <img :src="`http://127.0.0.1:7700/${item.pic}`" alt />
+          <img :src="`http://xiaoxuan.applinzi.com/${item.pic}`" alt />
           <h4 class="pName" v-text="item.pname"></h4>
           <span class="price" v-text="`￥${item.price}`"></span>
         </router-link>

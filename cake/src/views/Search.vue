@@ -33,7 +33,7 @@
     <div class="prolist" v-show="product_show">
       <div class="pro-item" v-for="(item,i) of search_list" :key="i">
         <router-link :to="`/Details/${item.pid}`">
-          <img :src="`http://127.0.0.1:7700/${item.pic}`" alt />
+          <img :src="`http://xiaoxuan.applinzi.com/${item.pic}`" alt />
           <h4 class="pName" v-text="item.pname"></h4>
           <span class="price" v-text="`￥${item.price}`"></span>
         </router-link>

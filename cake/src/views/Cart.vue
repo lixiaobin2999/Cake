@@ -9,7 +9,7 @@
         <span class="input_sp" v-if="!item.selected" @click="radios(index)"></span>
       </label>
       <router-link :to="`/Details/${item.pid}`">
-        <img class="img" :src="`http://127.0.0.1:7700/${item.pic}`" alt />
+        <img class="img" :src="`http://xiaoxuan.applinzi.com/${item.pic}`" alt />
       </router-link>
       <div>
         <router-link :to="`/Details/${item.pid}`">
