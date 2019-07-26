@@ -266,11 +266,7 @@ export default {
   top: -5px;
   opacity: 0.5;
 }
-/*
-.order li .add:before {
-  content: "\25B2";
-  font-size: 12px;
-} */
+
 .order li .cut {
   position: absolute;
   right: -14.75px;
@@ -280,11 +276,7 @@ export default {
 .order li .serect {
   color: #ed143d;
 }
-/*
-.order li .cut:before {
-  content: "\25Bc";
-  font-size: 12px;
-} */
+
 .proList {
   display: flex;
   flex-wrap: wrap;
@@ -303,12 +295,11 @@ export default {
 .repertory {
   width: 100%;
   font-size: 0.43rem;
-  /* padding: 0.1rem 0; */
+  padding: 0.1rem 0;
   color: #fff;
-  /* margin-top: -0.13rem; */
   text-indent: 0.2rem;
   position: absolute;
-  bottom: 6px;
+  bottom: 4px;
   background: rgba(204, 204, 204, 0.8);
 }
 .pro-item .pName {

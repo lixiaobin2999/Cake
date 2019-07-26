@@ -37,13 +37,13 @@
     <div v-if="noCart" style="margin-top: 86px;width:100%;">
       <img src="images/product/0aebc5277312293f7c4648af24ba4cc.png" alt />
     </div>
-    <div class="bottom" v-if="list">
+    <div class="bottom" v-if="list" v-show="$store.getters.getIslogin">
       <label for="bottom_input" @change="selectAll">
         <input type="checkbox" v-model="isSelectAll" id="bottom_input" />
         <span class="bottom_input iconfont">&#xe786;</span>
         <span class="all">全选</span>
       </label>
-      <div class="count" v-if="list">
+      <div class="count">
         <span class="money">
           <span>总计：¥{{money}}</span>
         </span>
@@ -51,7 +51,7 @@
           <span>总数：{{num}}</span>
         </span>
       </div>
-      <div class="bottom_right" v-if="list">
+      <div class="bottom_right">
         <label class="delete" @click="delCart">删除</label>
         <label class="close" @click="toClose">结算</label>
       </div>

@@ -182,6 +182,7 @@ export default {
       setTimeout(() => {
         this.isRun = true;
       }, 10);
+      this.$router.push('/Index')
     });
   },
   // 注册子组件

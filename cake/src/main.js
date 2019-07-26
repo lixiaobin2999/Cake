@@ -4,9 +4,9 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import 'amfe-flexible'
-
 // 完整引入mint-ui
 import MintUI from 'mint-ui'
+
 // 单引引入mint-ui样式
 import 'mint-ui/lib/style.css'
 // 将mint-ui注册vue

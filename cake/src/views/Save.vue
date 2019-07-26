@@ -78,9 +78,7 @@ export default {
 .repertory {
   width: 100%;
   font-size: 0.43rem;
-  /* padding: 0.1rem 0; */
   color: #fff;
-  /* margin-top: -0.13rem; */
   text-indent: 0.2rem;
   position: absolute;
   bottom: 6px;

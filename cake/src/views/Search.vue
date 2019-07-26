@@ -118,7 +118,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .mt {
   margin: 10px 0;
   overflow: hidden;
