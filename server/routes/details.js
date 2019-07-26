@@ -109,8 +109,6 @@ router.get("/details", (req, res) => {
     }
   });
 });
-
-
 // 热门搜索的数据展示为浏览量高的商品
 // 预览量大于100的取前十条数据到热门搜索进行展示
 router.get("/search", (req, res) => {
@@ -121,8 +119,6 @@ router.get("/search", (req, res) => {
     res.send(result)
   })
 })
-
-
 // 预览量大于100的取前十条数据到热门搜索进行展示
 router.get("/search", (req, res) => {
   var sql = `SELECT * FROM cake_product WHERE read_num>100 order by read_num desc limit 0,10`;
@@ -132,7 +128,6 @@ router.get("/search", (req, res) => {
     res.send(result)
   })
 })
-
 // 搜索关键词
 router.get("/keyword", (req, res) => {
   var pname = req.query.pname;

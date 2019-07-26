@@ -159,7 +159,7 @@ export default {
   text-align: center;
   margin: 10px 0;
   color: #000;
-  padding-top: 40px;
+  padding-top: 30px;
 }
 .own a::before {
   content: "";
@@ -167,45 +167,45 @@ export default {
   width: 1.2rem;
   height: 1.2rem;
   background: url(../../public/images/20190723190115.png) no-repeat center;
-  background-size: 13rem 13rem;
-  top: -9%;
+  background-size: 10rem 10rem;
+  top: -25%;
   left: 24%;
 }
 .own a:nth-of-type(1):before {
-  background-position: -26px -81px;
+  background-position: -15px -56px;
 }
 .own a:nth-of-type(2):before {
-  background-position: -99px -81px;
+  background-position: -71px -56px;
 }
 .own a:nth-of-type(3):before {
-  background-position: -171px -81px;
+  background-position: -128px -56px;
 }
 .own a:nth-of-type(4):before {
-  background-position: -245px -81px;
+  background-position: -183px -56px;
 }
 .own a.birth:before {
-  background-position: -29px -150px;
+  background-position: -17px -109px;
 }
 .own a.detail:before {
-  background-position: -99px -150px;
+  background-position: -72px -109px;
 }
 .own a.card:before {
-  background-position: -171px -150px;
+  background-position: -127px -109px;
 }
 .own a.our:before {
-  background-position: -29px -150px;
+  background-position: -29px -109px;
 }
 .own a.shoucang:before {
-  background-position: -26px -218px;
+  background-position: -15px -163px;
 }
 .own a.online:before {
-  background-position: -243px -150px;
+  background-position: -183px -109px;
 }
 .own a.ticket:before {
-  background-position: -318px -150px;
+  background-position: -240px -109px;
 }
 .own a.our:before {
-  background-position: -394px -150px;
+  background-position: -298px -109px;
 }
 .is_login {
   overflow: hidden;

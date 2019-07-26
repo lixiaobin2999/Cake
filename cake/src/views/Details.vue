@@ -335,7 +335,6 @@ export default {
               else_message_list,
               "else_message"
             );
-
             // 需要的数据格式
             this.spec_lists.difference = spec;
             this.myList(size_list, "尺寸", "size");

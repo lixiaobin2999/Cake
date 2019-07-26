@@ -126,11 +126,6 @@ router.post("/set", (req, res) => {
   var imgData = decodeURIComponent(req.body.imgData);
   var phone = req.body.phone;
   // console.log(imgData == "null")
-
-
-
-
-
   var sql = "SELECT avatar FROM cake_user WHERE uid=?"
   pool.query(sql, [uid], (err, result) => {
     if (err) throw err;
@@ -149,6 +144,7 @@ router.post("/set", (req, res) => {
             var base64Data = imgData.replace(/^data:image\/\w+;base64,/, "");
             // console.log(base64Data)
             var dataBuffer = new Buffer(base64Data, 'base64');
+            console.log(dataBuffer)
             fs.writeFile(`public/images/avatar/${phone}.png`, dataBuffer, function (err) {
               if (err) {
                 res.send(err);

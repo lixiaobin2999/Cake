@@ -335,9 +335,7 @@ body {
   padding: 0 10px 0 10px;
   border-bottom: 1px solid #ccc;
 }
-.contact .pro {
-  /* border:0 !important */
-}
+
 .myshop {
   /* line-height: 35px; */
   margin-top: 10px;

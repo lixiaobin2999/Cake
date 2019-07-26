@@ -47,7 +47,7 @@
                   <i class="iconfont">&#xe61a;</i>
                 </span>
                 <span to="#" class="slide">
-                  <i
+                  <i data-text="店铺营业时间为：8:30-18:00,对每一份甜点心怀敬意,为保证最佳赏味,请提前预约制作。" 
                     :class="[isRun?'run':'',!isRun?'paused':'']"
                   >店铺营业时间为：8:30-18:00,对每一份甜点心怀敬意,为保证最佳赏味,请提前预约制作。</i>
                 </span>
@@ -212,7 +212,7 @@ export default {
             }
           });
         this.loading = false;
-      }, 2000);
+      }, 1000);
     },
     detail() {
       this.active = "myProduct";
@@ -337,14 +337,21 @@ img {
 .gonggao .slide i.paused {
   animation-play-state: paused;
 }
+.slide i:after {
+  position: absolute;
+  left: 100%;
+  content: attr(data-text);
+  margin-left: 50px;
+}
 @keyframes translatex {
   0% {
     transform: translateX(0px);
   }
   100% {
-    transform: translateX(-620px);
+    transform: translateX(-670px);
   }
 }
+
 /* 轮播 */
 .mint-swipe {
   height: 200px !important;

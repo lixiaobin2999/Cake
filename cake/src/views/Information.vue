@@ -44,7 +44,7 @@
     <mt-button class="save" @click="save">保存</mt-button>
   </div>
 </template>
-<script>
+<script> 
 // 导入eventBus 兄弟之间通信
 // import eventBus from "../eventBus.js";
 export default {
@@ -106,11 +106,11 @@ export default {
         reader.onloadend = function() {
           // var strBase64 = reader.result.substring(84);
           var strBase64 = reader.result.substring(0);
-          // console.log(strBase64);
+          console.log(strBase64);
         };
         reader.onload = function(e) {
           // console.log(e);
-          that.imgSrc = this.result; // 注意:这里的this.result中,这个this不是vue实例,而是reader对象,所以之前用that接收vue示例  that.imgSrc
+          that.imgSrc=this.result;//注意:这里的this.result中,这个this不是vue实例,而是reader对象,所以之前用that接收vue示例  that.imgSrc
         };
       } else {
         return;
