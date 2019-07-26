@@ -21,10 +21,8 @@ export default {
   },
   components: { loading },
   created() {
-    // 设置保存登录状态的uid
-    this.$store.commit("setUserId");
-    // this.bus.$emit("loading", true);
-    // console.log(this.$store.getters.getIsLoading);
+    // console.log(this.$store.getters.getIslogin)
+    if (sessionStorage.getItem("token")) this.$store.commit("setIslogin", true);
   },
   methods: {}
 };

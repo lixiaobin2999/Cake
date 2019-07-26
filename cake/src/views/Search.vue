@@ -55,19 +55,18 @@ export default {
   },
   created() {
     this.axios.get("/product/search").then(result => {
-      console.log(result);
+      // console.log(result.data);
       this.list = result.data;
-      console.log(this.list);
+      // console.log(this.list);
     });
     this.load();
   },
   methods: {
     load() {
-      var uid = sessionStorage.getItem("uid");
-      this.axios.get("/product/history", { params: { uid } }).then(result => {
+      this.axios.get("/user/history").then(result => {
         // 该用户的历史搜索记录
         this.history = result.data;
-        console.log(this.history);
+        // console.log(this.history);
         this.history = this.deteleObject(this.history, "pname");
       });
     },
@@ -86,11 +85,11 @@ export default {
       this.kw = param;
       var uid = sessionStorage.getItem("uid");
       this.axios
-        .get("/product/keyword", { params: { pname: param, uid: uid } })
+        .get("/product/keyword", { params: { pname: param } })
         .then(result => {
-          console.log(result);
+          // console.log(result.data);
           this.search_list = result.data;
-          console.log(this.search_list);
+          // console.log(this.search_list);
         });
     },
     // 搜索关键词
@@ -110,7 +109,7 @@ export default {
     // 点击删除,清空历史搜索记录
     clear_history() {
       var uid = sessionStorage.getItem("uid");
-      this.axios.get("/product/clearhis", { params: { uid } }).then(result => {
+      this.axios.get("/user/clearhis").then(result => {
         //删除后,刷新历史搜索记录
         this.load();
       });

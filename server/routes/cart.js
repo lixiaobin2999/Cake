@@ -8,7 +8,7 @@ var router = express.Router();
 // 获取购物车的信息
 router.get("/get_cart", (req, res) => {
   // 用户的id
-  var user_id = req.query.user_id;
+  var user_id = req.user;
 
   if (!user_id) {
     res.send({ code: 400, msg: "未登录,请先登录" });
@@ -33,7 +33,7 @@ router.get("/get_cart", (req, res) => {
 
 // 修改购物车表的信息 (要传入用户id,商品id,规格的id,购买该商品的数量)
 router.post("/set_cart", (req, res) => {
-  var user_id = req.body.user_id;
+  var user_id = req.user;
   var product_id = req.body.product_id;
   var sid = req.body.sid;
   var count = req.body.count;
@@ -81,7 +81,9 @@ router.post("/del_cart", (req, res) => {
 
 // 加入购物车路由 (需要参数用户id,商品id,规格id,数量)
 router.post("/add_cart", (req, res) => {
-  var user_id = req.body.user_id;
+  var user_id = req.user;
+  // console.log(req.body)
+  req.body.user_id = user_id
   var product_id = req.body.product_id;
   var sid = req.body.sid;
   var count = req.body.count;

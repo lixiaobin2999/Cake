@@ -15,8 +15,11 @@ const loginRouter = require("./routes/user");
 const detailsRouter = require("./routes/details");
 // 导入cart路由器 购物车
 const cartRouter = require("./routes/cart");
+// 导入orders路由器 订单
+const ordersRouter = require("./routes/orders");
 
-const avatarRouter = require("./routes/avatar");
+/*引入token的模块*/
+const jwt = require("./jwt.js")
 
 // 创建服务器
 var server = express();
@@ -30,9 +33,32 @@ server.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 // 使用cors中间件 解决跨域
 server.use(cors({
-  origin: ["http://localhost:7000", "http://127.0.0.1:5500", "http://127.0.0.1:7000", "http://176.122.18.101:7000", "http://172.24.127.2", "*", "htt://176.122.18.93", "http://kirito7.applinzi.com"],
+  origin: ["http://localhost:7000", "http://127.0.0.1:5500", "http://127.0.0.1:7000", "http://176.122.18.101:7000", "http://172.24.127.2", "*", "htt://176.122.18.93", "http://kirito7.applinzi.com", "http://localhost:8080"],
   credentials: true
 }));
+
+
+server.use((req, res, next) => {
+  // console.log(req.url)
+  if ((req.url != '/user/loseP' && req.url != '/user/login' && req.url != '/user/reg') && (req.url.startsWith("/user") || req.url.startsWith("/cart") || req.url.startsWith("/orders"))) {
+    // console.log("进入")
+    let token = req.headers.token;
+    let result = jwt.verifyToken(token);
+    // 如果考验通过就next，否则就返回登陆信息不正确
+    if (result === undefined) {
+      res.send({ status: 403, msg: "未提供证书" })
+    } else if (result.name == 'TokenExpiredError') {
+      res.send({ status: 403, msg: '登录超时，请重新登录' });
+    } else if (result.name == "JsonWebTokenError") {
+      res.send({ status: 403, msg: '证书出错' })
+    } else {
+      req.user = result;
+      next();
+    }
+  } else {
+    next();
+  }
+});
 
 
 // session
@@ -61,4 +87,4 @@ server.use("/product", detailsRouter);
 
 server.use("/cart", cartRouter);
 
-server.use("/avatar", avatarRouter);
+server.use("/orders", ordersRouter);

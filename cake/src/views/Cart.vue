@@ -37,13 +37,13 @@
     <div v-if="noCart" style="margin-top: 86px;width:100%;">
       <img src="images/product/0aebc5277312293f7c4648af24ba4cc.png" alt />
     </div>
-    <div class="bottom">
+    <div class="bottom" v-if="list">
       <label for="bottom_input" @change="selectAll">
         <input type="checkbox" v-model="isSelectAll" id="bottom_input" />
         <span class="bottom_input iconfont">&#xe786;</span>
         <span class="all">全选</span>
       </label>
-      <div class="count">
+      <div class="count" v-if="list">
         <span class="money">
           <span>总计：¥{{money}}</span>
         </span>
@@ -51,7 +51,7 @@
           <span>总数：{{num}}</span>
         </span>
       </div>
-      <div class="bottom_right">
+      <div class="bottom_right" v-if="list">
         <label class="delete" @click="delCart">删除</label>
         <label class="close" @click="toClose">结算</label>
       </div>
@@ -84,25 +84,21 @@ export default {
     // 获取购物车列表信息
     load() {
       // 加了判断,是否为登陆状态
-      this.uid = this.$store.getters.getUserId;
-      var uid = this.uid;
-      if (uid != undefined) {
-        this.axios
-          .get("/cart/get_cart", { params: { user_id: uid } })
-          .then(result => {
-            // console.log(result.data);
-            this.list = result.data.data;
-            if (result.data.code != 400) {
-              for (var i of result.data.data) {
-                i.selected = false;
-              }
-              this.list = result.data.data;
-              this.noCart = false;
-            } else {
-              // console.log("购物车为空");
-              this.noCart = true;
+      if (this.$store.getters.getIslogin) {
+        this.axios.get("/cart/get_cart").then(result => {
+          // console.log(result.data);
+          this.list = result.data.data;
+          if (result.data.code == 200) {
+            for (var i of result.data.data) {
+              i.selected = false;
             }
-          });
+            this.list = result.data.data;
+            this.noCart = false;
+          } else {
+            // console.log("购物车为空");
+            this.noCart = true;
+          }
+        });
       } else {
         // console.log("没有登录");
         this.noCart = true;
@@ -110,7 +106,7 @@ export default {
     },
     // 全选
     selectAll(e) {
-      if (!this.$store.getters.getUserId) return;
+      if (!this.$store.getters.getIslogin) return;
       //全选按钮状态
       var cb = e.target.checked;
       //依据状态修改列表cb
@@ -177,21 +173,22 @@ export default {
     // 发送axios 修改购物车列表的商品数量数据
     setCart(index) {
       // 是否为登陆状态
-      var uid = sessionStorage.getItem("uid");
-      if (uid != undefined) {
+      if (this.$store.getters.getIslogin) {
         var list = this.list[index];
         this.axios
-          .post(
-            "/cart/set_cart",
-            `user_id=${uid}&product_id=${list.pid}&sid=${list.sid}&count=${list.count}`
-          )
+          .post("/cart/set_cart", {
+            product_id: list.pid,
+            sid: list.sid,
+            count: list.count
+          })
           .then(result => {
-            // console.log(result);
+            console.log(result.data);
           });
       }
     },
     // 删除购物车列表的商品信息
     delCart() {
+      if (!this.$store.getters.getIslogin) return;
       // 删除多个商品
       // 创建变量保存空字符串
       var str = "";
@@ -212,8 +209,8 @@ export default {
         .confirm("是否确认删除选中的商品")
         .then(action => {
           // 发送ajax请求
-          this.axios.post("/cart/del_cart", `cids=${str}`).then(result => {
-            // console.log(result);
+          this.axios.post("/cart/del_cart", { cids: str }).then(result => {
+            // console.log(result.data);
             // 重新加载数据
             this.load();
             this.money = 0;
@@ -226,6 +223,7 @@ export default {
         });
     },
     toClose() {
+      if (!this.$store.getters.getIslogin) return;
       var list = [];
       for (var item of this.list) {
         if (item.selected == true) {
@@ -247,11 +245,6 @@ export default {
       }
     }
   },
-  // watch: {
-  //   uid() {
-  //     this.load();
-  //   }
-  // },
   activated() {
     // keepAlive(缓存)开启时 重新刷新数据
     this.isSelectAll = false;
@@ -268,6 +261,7 @@ export default {
 }
 .cart {
   margin-bottom: 105px;
+  margin-top: 15px;
 }
 .cart .cart_box {
   display: flex;
@@ -423,7 +417,7 @@ export default {
 .cart .bottom_right {
   display: inline-block;
   position: relative;
-  top: -7px;
+  /* top: -7px; */
   bottom: 4px;
   right: -44px;
   line-height: 50px;

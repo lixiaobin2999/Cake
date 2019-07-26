@@ -1,17 +1,17 @@
 <template>
   <div class="total" v-cloak>
     <!-- 未登录状态下 -->
-    <div class="not_login" v-if="$store.getters.getUserId==''">
+    <div class="not_login" v-if="!$store.getters.getIslogin">
       <div class="logo">
         <img src="../../public/images/avatar.png" alt />
       </div>
       <mt-button class="myButton" @click="login">登录</mt-button>
     </div>
     <!-- 登录状态下 -->
-    <div class="is_login" v-if="$store.getters.getUserId!=''" v-cloak>
+    <div class="is_login" v-if="$store.getters.getIslogin" v-cloak>
       <div class="avatar_wrap">
         <router-link to="Infornation" class="logo">
-          <img :src="`http://xiaoxuan.applinzi.com/${pic}`" alt />
+          <img :src="pic" alt />
         </router-link>
       </div>
       <div class="info">
@@ -33,7 +33,7 @@
       <div class="own">
         <p class="section_title">我的服务</p>
         <a href="javascript:;" class="birth">生日助手</a>
-        <a href="javascript:;" class="detail">个人资料</a>
+        <router-link to="/Infornation" class="detail">个人资料</router-link>
         <a href="javascript:;" class="card">储值卡专享兑换券</a>
         <router-link to="/Save" class="shoucang">我的收藏</router-link>
         <a href="javascript:;" class="online">在线客服</a>
@@ -56,18 +56,13 @@ export default {
   },
   methods: {
     load() {
-      this.$store.commit("setUserId");
-      var uid = this.$store.getters.getUserId;
-      // console.log(uid)
-      if (uid) {
-        this.axios.post("/user/own", `uid=${uid}`).then(result => {
-          // console.log(result.data)
-          if (result.data.code != 400) {
-            this.pic = result.data.data[0].avatar;
-            this.uphone = result.data.data[0].phone;
-          }
-        });
-      }
+      this.axios.post("/user/own").then(result => {
+        // console.log(result.data);
+        if (result.data.code == 200) {
+          this.pic = `http://127.0.0.1:5050/${result.data.data[0].avatar}`;
+          this.uphone = result.data.data[0].phone;
+        }
+      });
     },
     login() {
       // 跳转到登陆页
@@ -76,9 +71,9 @@ export default {
     // 退出登录
     logout() {
       this.$messagebox("", "是否退出登录").then(action => {
-        // sessionStorage.clear("uid");
         this.uphone = "";
-        this.$store.commit("delUserId");
+        this.$store.commit("setIslogin", false);
+        sessionStorage.removeItem("token");
         this.$router.push("/Login");
       });
     }
@@ -86,6 +81,9 @@ export default {
   activated() {
     // keepAlive(缓存)开启时 重新刷新数据
     this.load();
+    if (this.$router.history.current.query.imgSrc != null) {
+      this.pic = this.$router.history.current.query.imgSrc;
+    }
   }
 };
 </script>
@@ -95,7 +93,7 @@ export default {
 }
 .total {
   background: #f5f5f5;
-  position: fixed;
+  /* position: fixed; */
   top: -2%;
   background-image: url("../../public/images/bcfa076fd26e7285e70c848ef0fb1a0.jpg");
 }

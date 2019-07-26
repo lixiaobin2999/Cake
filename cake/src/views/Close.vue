@@ -14,9 +14,11 @@
     </mt-navbar>
     <mt-tab-container v-model="selected">
       <mt-tab-container-item class="box" id="1">
-        <div class="site">
-          <span>请选择收货地址</span>
-          <span class="right">&gt;</span>
+        <div class="site" @click="showAddressPicker">
+          <span v-show="!active">请选择收货地址</span>
+          <span v-show="active">收货地址为:</span>
+          <span class="right" v-show="!active">&gt;</span>
+          <span class="right" v-show="active" v-text="site"></span>
         </div>
         <div class="myshop">
           <span>门店名称：××蛋糕</span>
@@ -107,27 +109,36 @@
       </mt-tab-container-item>
     </mt-tab-container>
     <div class="bottom">
-      <span class="money">总计：¥268</span>
+      <span class="money" v-text="Summoney()"></span>
       <label class="submit" @click="submit_order">提交订单</label>
     </div>
   </div>
 </template>
 <script>
+import { provinceList, cityList, areaList } from "../data/area";
+const addressData = provinceList;
+addressData.forEach(province => {
+  province.children = cityList[province.value];
+  province.children.forEach(city => {
+    city.children = areaList[city.value];
+  });
+});
 export default {
   data() {
     return {
       selected: "1",
       pickerValue: "",
       time: "",
-      list: []
+      list: [],
+      // 地址
+      site: "",
+      active: false
     };
   },
   created() {
-    // 获取用户id
-    this.uid = this.$store.getters.getUserId;
     if (this.$router.history.current.name == "Close") {
       this.list = this.$router.history.current.query.data;
-      console.log(this.list);
+      // console.log(this.list);
     }
     var time = new Date();
     var year = time.getFullYear();
@@ -152,10 +163,18 @@ export default {
       ":" +
       second;
   },
+  mounted() {
+    this.addressPicker = this.$createCascadePicker({
+      title: "请选择地址",
+      data: addressData,
+      onSelect: this.selectHandle,
+      onCancel: this.cancelHandle
+    });
+  },
   methods: {
     //提交订单
     submit_order() {
-      console.log("提交订单");
+      // console.log("提交订单");
       //获取当前时间
       var time = new Date();
       var u_order_time = time.getTime();
@@ -175,21 +194,21 @@ export default {
       //console.log(order_time)
       //随机取9个数
       var arr = [];
-      for (var i = 0; i < 9; i++) {
+      for (var i = 0; i < 8; i++) {
         var index = Math.floor(Math.random() * 10);
         arr.push(index);
       }
       arr = arr.join("");
       //订单号
       var order_time = year + month + date + arr;
-      console.log(order_time);
+      // console.log(order_time);
       //遍历得到每一个商品的信息
       for (var i of this.list) {
-        console.log(i);
-        console.log(i.sid);
+        // console.log(i);
+        // console.log(i.sid);
         // 结算的商品生成同一个订单号
         this.axios
-          .get("/product/order", {
+          .get("/orders/order", {
             params: {
               product_id: i.pid,
               count: i.count,
@@ -197,22 +216,36 @@ export default {
               difference: i.sid
             }
           })
-          .then(result => {
-            console.log(result);
-            this.$router.push("/OrderForm");
-          });
+          .then(result => {});
       }
       // 生成一个用户订单
-      this.axios("/product/user_order", {
+      this.axios("/orders/user_order", {
         params: {
-          user_id: this.uid,
           status: 1,
           order_time: u_order_time,
           order_id: order_time
         }
       }).then(result => {
-        console.log(result);
+        // console.log(result);
+        // 去到订单页
+        this.$router.push({
+          path: "/OrderForm",
+          query: {
+            data: "fromClose"
+          }
+        });
       });
+      if (this.list[0].cid != null) {
+        var str = "";
+        // 创建循环拼接字符串内容
+        for (var item of this.list) {
+          // 选中状态
+          str += item.cid + ",";
+        }
+        str = str.substring(0, str.length - 1);
+        // console.log(this.list);
+        this.axios.post("/cart/del_cart", { cids: str }).then(result => {});
+      }
     },
     showDateTimePicker() {
       if (!this.dateTimePicker) {
@@ -230,13 +263,6 @@ export default {
       this.dateTimePicker.show();
     },
     selectHandle(date, selectedVal, selectedText) {
-      // this.$createDialog({
-      //   type: "warn",
-      //   content: `Selected Item: <br/> - date: ${date} <br/> - value: ${selectedVal.join(
-      //     ", "
-      //   )} <br/> - text: ${selectedText.join(" ")}`,
-      //   icon: "cubeic-alert"
-      // }).show();
       this.time =
         selectedText[0] +
         "-" +
@@ -249,19 +275,50 @@ export default {
         selectedText[4] +
         ":" +
         selectedText[5];
+    },
+    Summoney() {
+      let money = 0;
+      var list = this.list;
+      for (let i = 0; i < list.length; i++) {
+        money += list[i].count * list[i].price;
+      }
+      return "总计：¥" + money;
+    },
+    // 选择地址
+    showAddressPicker() {
+      this.addressPicker.show();
+    },
+    selectHandle(selectedVal, selectedIndex, selectedText) {
+      // this.$createDialog({
+      //   type: "warn",
+      //   content: `Selected Item: <br/> - value: ${selectedVal.join(
+      //     ", "
+      //   )} <br/> - index: ${selectedIndex.join(
+      //     ", "
+      //   )} <br/> - text: ${selectedText.join(" ")}`,
+      //   icon: "cubeic-alert"
+      // }).show();
+      // console.log(selectedText.join(" "));
+      this.site = selectedText.join("/");
+      this.active = true;
+    },
+    cancelHandle() {
+      this.$createToast({
+        type: "correct",
+        txt: "取消选择",
+        time: 1000
+      }).show();
+      this.active = false;
     }
-    // cancelHandle() {
-    //   this.$createToast({
-    //     type: "correct",
-    //     txt: "Picker canceled",
-    //     time: 1000
-    //   }).show();
-    // }
+  },
+  beforeRouteEnter(to, from, next) {
+    // 没有登录就跳到登录页面
+    next(vm => {
+      if (!vm.$store.getters.getIslogin) {
+        vm.$router.push("/Login");
+      }
+    });
   }
-  // beforeRouteEnter(to, from, next) {
-  //   console.log(to);
-  //   next();
-  // }
 };
 </script>
 <style scoped>
@@ -335,7 +392,6 @@ body {
   padding: 0 10px 0 10px;
   border-bottom: 1px solid #ccc;
 }
-
 .myshop {
   /* line-height: 35px; */
   margin-top: 10px;

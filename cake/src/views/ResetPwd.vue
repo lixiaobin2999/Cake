@@ -7,7 +7,7 @@
     <mt-field type="password" label="新密码" placeholder="8~16位,数字、字母、字符包含两种" v-model="password"></mt-field>
     <div class="button">
       <mt-button class="sign" @click="sign">确定</mt-button>
-      <p @click="$router.push('/Login')" class="login_jump">返回登录注册页</p>
+      <p @click="$router.push('/Login')" class="login_jump">返回登录</p>
     </div>
   </div>
 </template>
@@ -102,9 +102,14 @@ export default {
         return;
       } else {
         this.axios
-          .post("/user/loseP", "phone=" + this.phone + "&upwd=" + this.password)
+          .post("/user/loseP", { phone: this.phone, upwd: this.password })
           .then(result => {
-            this.$toast("修改成功");
+            console.log(result.data);
+            if (result.data.code == 200) {
+              this.$toast("修改成功");
+            } else {
+              this.$toast("修改失败");
+            }
           });
       }
     }
@@ -127,7 +132,7 @@ export default {
 }
 .login_jump {
   font-size: 0.4rem;
-  color: #ccc;
+  color: #666;
   margin-top: 20px;
   margin-left: 10px;
 }

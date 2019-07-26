@@ -9,7 +9,7 @@
     <div @click="To('Cart')" class="iconfont toCart">&#xe611;</div>
     <!-- 大图 -->
     <div class="largeImg">
-      <img v-if="list.pic!=undefined" :src="`http://xiaoxuan.applinzi.com/${list.pic}`" alt />
+      <img v-if="list.pic!=undefined" :src="`http://127.0.0.1:5050/${list.pic}`" alt />
     </div>
     <!-- 简介 -->
     <div class="intro">
@@ -118,14 +118,12 @@
           <span @click="To('Index')">首页</span>
         </li>
         <li class="li-nav">
-          <label for="input">
-            <i
-              class="iconfont"
-              :class="{actived:isSelected==true&&save==1}"
-              @click="isChange"
-            >&#xe637;</i>
-          </label>
-          <span>收藏</span>
+          <i
+            class="iconfont"
+            :class="{actived:isSelected==true&&save==1}"
+            @click="isChange"
+          >&#xe637;</i>
+          <span v-text="saveStatus"></span>
         </li>
         <li class="buy">
           <span class="add-cart" @click="Select(1)">加入购物车</span>
@@ -216,7 +214,8 @@ export default {
       // 跳到购物车
       toCart: false,
       // 收藏的状态
-      save: 0
+      save: 0,
+      saveStatus: ""
     };
   },
   props: ["pid"],
@@ -226,25 +225,20 @@ export default {
   methods: {
     // 点击改变收藏的颜色
     isChange() {
-      //获取登录的用户id
-      this.uid = this.$store.getters.getUserId;
-      if (this.uid) {
+      if (this.$store.getters.getIslogin) {
         this.isSelected = !this.isSelected;
       } else {
         this.$toast("请先登录");
         return;
       }
-      if (this.uid) {
-        this.save = this.save == 0 ? 1 : 0;
-        this.axios
-          .post("/product/save", `uid=${this.uid}&pid=${this.pid}`)
-          .then(result => {
-            // console.log(result);
-          });
-      } else {
-        // 没登录就给提示
-        this.$toast("请先登录");
-      }
+
+      this.save = this.save == 0 ? 1 : 0;
+      this.axios.post("/user/save", { pid: this.pid }).then(result => {
+        // console.log(result.data);
+        if (result.data.code == 200) {
+        }
+      });
+      // console.log(this.isSelected);
       if (this.isSelected == true) {
         // 选中收藏
         // console.log("选中");
@@ -256,9 +250,8 @@ export default {
       }
     },
     load() {
-      var uid = this.$store.getters.getUserId;
       this.axios
-        .get("/product/details", { params: { uid: uid, pid: this.pid } })
+        .get("/product/details", { params: { pid: this.pid } })
         .then(result => {
           // console.log(result.data.code);
           if (result.data.code == 200) {
@@ -269,6 +262,7 @@ export default {
             // 是否有收藏
             this.save = result.data.data.save;
             this.isSelected = this.save != 0 ? true : false;
+            this.saveStatus = this.isSelected == 0 ? "收藏" : "已收藏";
             // 价钱的数组
             var priceArray = [];
             // 库存
@@ -335,6 +329,7 @@ export default {
               else_message_list,
               "else_message"
             );
+
             // 需要的数据格式
             this.spec_lists.difference = spec;
             this.myList(size_list, "尺寸", "size");
@@ -390,8 +385,7 @@ export default {
     },
     // 点击出现选择规格
     Select(n) {
-      var uid = this.$store.getters.getUserId;
-      if (uid != "") {
+      if (this.$store.getters.getIslogin) {
         this.show_spec = true;
         var selectArr = this.selectArr;
         var shopItemInfo = this.shopItemInfo;
@@ -432,13 +426,14 @@ export default {
               // 加入购物车
               if (n == 1) {
                 this.axios
-                  .post(
-                    "/cart/add_cart",
-                    `user_id=${uid}&product_id=${this.pid}&sid=${sid}&count=${this.number}`
-                  )
+                  .post("/cart/add_cart", {
+                    product_id: this.pid,
+                    sid: sid,
+                    count: this.number
+                  })
                   .then(result => {
                     // console.log(result.data);
-                    if (result.data.code != 400) {
+                    if (result.data.code == 200) {
                       this.$toast({
                         message: "加入购物车成功",
                         duration: 1000
@@ -520,9 +515,6 @@ export default {
           // 该商品的规格  shopItemInfo[key].sid
           this.priceAll = shopItemInfo[key].price;
           this.repertoryAll = parseInt(shopItemInfo[key].repertory);
-          // if (this.number > this.priceAll) {
-          //   this.number = parseInt(shopItemInfo[key].repertory);
-          // }
         }
       }
     },

@@ -47,10 +47,10 @@ router.get("/index", (req, res) => {
   })
 });
 
-// 首页分类商品
-router.get("/indexClassify",(req,res)=>{
-  // var 
-});
+// // 首页分类商品
+// router.get("/indexClassify",(req,res)=>{
+//   // var 
+// });
 
 
 

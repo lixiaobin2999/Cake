@@ -7,7 +7,7 @@
     <div class="content">
       <div class="logo">
         <label for="input">
-          <img :src="`http://xiaoxuan.applinzi.com/${pic}`" class="img" alt v-if="!imgSrc" />
+          <img :src="`http://127.0.0.1:5050/${pic}`" class="img" alt v-if="!imgSrc" />
           <img v-show="imgSrc" :src="imgSrc" class="img" ref="img" />
           <input
             type="file"
@@ -44,7 +44,7 @@
     <mt-button class="save" @click="save">保存</mt-button>
   </div>
 </template>
-<script> 
+<script>
 // 导入eventBus 兄弟之间通信
 // import eventBus from "../eventBus.js";
 export default {
@@ -55,19 +55,15 @@ export default {
       real_name: "",
       gender: "",
       birthday: "", //日期组件选中的值
-      isFirstEnter: false, // 是否第一次进入，默认false
       pic: "images/avatar.png",
       imgInfo: null,
       imgSrc: null
     };
   },
   created() {
-    this.isFirstEnter = true;
-    // 获取该用户的个人信息
-    var uid = this.$store.getters.getUserId;
-    if (uid) {
-      this.axios.post("/user/own", `uid=${uid}`).then(result => {
-        // console.log(result);
+    if (this.$store.getters.getIslogin) {
+      this.axios.post("/user/own").then(result => {
+        // console.log(result.data);
         this.phone = result.data.data[0].phone;
         this.real_name = result.data.data[0].real_name;
         this.real_name = this.real_name == null ? "" : this.real_name;
@@ -106,19 +102,23 @@ export default {
         reader.onloadend = function() {
           // var strBase64 = reader.result.substring(84);
           var strBase64 = reader.result.substring(0);
-          console.log(strBase64);
+          // console.log(strBase64);
         };
         reader.onload = function(e) {
           // console.log(e);
-          that.imgSrc=this.result;//注意:这里的this.result中,这个this不是vue实例,而是reader对象,所以之前用that接收vue示例  that.imgSrc
+          that.imgSrc = this.result; // 注意:这里的this.result中,这个this不是vue实例,而是reader对象,所以之前用that接收vue示例  that.imgSrc
         };
       } else {
         return;
       }
     },
     jump() {
-      this.$router.push("/Index");
-      // eventBus.$emit("activeState", "me");
+      this.$router.push({
+        path: "/Index",
+        query: {
+          imgSrc: this.imgSrc
+        }
+      });
     },
     showFormatPicker() {
       var time = new Date();
@@ -158,12 +158,15 @@ export default {
       // 图片base64编码
       var key = encodeURIComponent(this.imgSrc);
       this.axios
-        .post(
-          "/user/set",
-          `uid=${uid}&real_name=${this.real_name}&gender=${this.gender}&birthday=${this.birth2}&phone=${this.phone}&imgData=${key}`
-        )
+        .post("/user/set", {
+          real_name: this.real_name,
+          gender: this.gender,
+          birthday: this.birth2,
+          phone: this.phone,
+          imgData: key
+        })
         .then(result => {
-          console.log(result);
+          // console.log(result);
           if (result.data.code == 200) {
             this.$toast("保存成功");
           } else {
@@ -171,6 +174,14 @@ export default {
           }
         });
     }
+  },
+  beforeRouteEnter(to, from, next) {
+    // 没有登录就跳到登录页面
+    next(vm => {
+      if (!vm.$store.getters.getIslogin) {
+        vm.$router.push("/Login");
+      }
+    });
   }
 };
 </script>

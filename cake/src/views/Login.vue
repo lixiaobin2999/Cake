@@ -69,10 +69,9 @@ export default {
         return;
       } else {
         this.axios
-          .post("/user/reg", "phone=" + this.phone + "&upwd=" + this.password)
+          .post("/user/reg", { phone: this.phone, upwd: this.password })
           .then(result => {
-            console.log(result);
-            console.log(result.data);
+            // console.log(result.data);
             // 失败弹出提示消息
             if (result.data.code == 400) {
               this.$toast(result.data.msg);
@@ -83,8 +82,7 @@ export default {
                 .confirm("是否直接登录到首页")
                 .then(action => {
                   // 确定--跳首页
-                  var uid = result.data.data.insertId;
-                  sessionStorage.setItem("uid", uid);
+                  this.$store.commit("setIslogin", true);
                   this.$router.push("/Index");
                 })
                 .catch(err => {
@@ -95,11 +93,6 @@ export default {
                     }, 3000);
                   }
                 });
-              // 3秒后跳转登录页
-              /*   setTimeout(() => {
-                this.selected = "2";
-                this.password = "";
-              }, 3000); */
             }
           });
       }
@@ -191,15 +184,13 @@ export default {
         return;
       } else {
         this.axios
-          .post("/user/login", "phone=" + this.phone + "&upwd=" + this.password)
+          .post("/user/login", { phone: this.phone, upwd: this.password })
           .then(result => {
             // console.log(result.data);
             if (result.data.code == 200) {
-              var uid = result.data.data[0].uid;
-              sessionStorage.setItem("uid", uid);
               // 跳转主页
+              this.$store.commit("setIslogin", true);
               this.$router.push("/Index");
-              this.$store.commit("setUserId");
             } else {
               this.$toast(result.data.msg);
             }
@@ -269,7 +260,7 @@ export default {
 /* 忘记密码 */
 .loseP p {
   font-size: 0.4rem;
-  color: #ccc;
+  color: #666;
   margin-top: 20px;
   margin-left: 10px;
 }

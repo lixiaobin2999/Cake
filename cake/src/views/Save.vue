@@ -24,14 +24,18 @@ export default {
   },
   props: ["pid"],
   created() {
-    //获取登录的用户id
-    this.uid = this.$store.getters.getUserId;
-    this.axios
-      .get("/product/save_list", { params: { uid: this.uid } })
-      .then(result => {
-        this.save_list = result.data;
-        console.log((this.save_list = result.data));
-      });
+    this.axios.get("/user/save_list").then(result => {
+      this.save_list = result.data;
+      // console.log(result.data);
+    });
+  },
+  beforeRouteEnter(to, from, next) {
+    // 没有登录就跳到登录页面
+    next(vm => {
+      if (!vm.$store.getters.getIslogin) {
+        vm.$router.push("/Login");
+      }
+    });
   }
 };
 </script>

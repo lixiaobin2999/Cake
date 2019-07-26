@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div style="height:50px;width:100%;">
-      <i class="iconfont" @click="$router.go(-1);" style="font-size:27px;">&#xe732;</i>
+      <i class="iconfont" @click="rollback" style="font-size:27px;">&#xe732;</i>
     </div>
     <!-- 订单状态 -->
     <div slot="content" class="nav-scroll-list-wrap scroll-wrapper">
@@ -12,7 +12,13 @@
         class="horizontal-scroll-list-wrap"
       >
         <ul class="nav-wrapper">
-          <li v-for="(item,i) of navTxts" :key="i" class="nav-item">{{item}}</li>
+          <li
+            v-for="(item,i) of navTxts"
+            :key="i"
+            class="nav_item"
+            :style="active[i].isSelect?'color:#fa7b7a;':''"
+            @click="isActive(i)"
+          >{{item}}</li>
         </ul>
       </cube-scroll>
     </div>
@@ -46,15 +52,16 @@
           </div>
         </div>
       </router-link>
-    </div>
-    <div class="end">
-      <span>
-        合计：
-        <span class="total" v-text="money">999</span>
-      </span>
-      <div class="over">
-        <span class="off">取消</span>
-        <span class="pay">付款</span>
+      <div class="end">
+        <span>
+          合计：
+          <span class="total" v-text="Summoney(i)"></span>
+        </span>
+        <div class="over" v-if="item.status!=5">
+          <span class="off" @click="Delorder(item.order_id)">取消</span>
+          <span class="pay">付款</span>
+        </div>
+        <span class="cancel" v-if="item.status==5">已取消</span>
       </div>
     </div>
   </div>
@@ -68,47 +75,64 @@ export default {
       options: 1,
       data: [],
       order: [],
-      money: 0
+      money: 0,
+      active: [
+        { isSelect: true },
+        { isSelect: false },
+        { isSelect: false },
+        { isSelect: false },
+        { isSelect: false },
+        { isSelect: false },
+        { isSelect: false }
+      ]
     };
   },
   created() {
-    // 获取用户id
-    this.uid = this.$store.getters.getUserId;
-    if (this.uid) {
-      // 获取该用户的所有订单信息
-      this.axios
-        .get("/product/order_list", { params: { uid: this.uid } })
-        .then(result => {
-          console.log(result.data);
-          if (result.data.code == 200) {
-            var list = result.data.data;
-            console.log(list);
-
-            //合计
-            for (var n = 0; n < list.length; n++) {
-              console.log(list[n]);
-              var money = list[n].price * list[n].count;
-              this.money += money;
-            }
-            var hash = {};
-            this.data = this.deteleObject(list, "order_id");
-            console.log(this.data);
-            // var newAll = list;
-            // console.log(list);  [[],[],...]
-            for (var i = 0; i < this.data.length; i++) {
-              this.order[i] = [];
-              for (var j = 0; j < list.length; j++) {
-                if (list[i].order_id == list[j].order_id) {
-                  this.order[i].push(list[j]);
-                }
-              }
-            }
-          }
-          console.log(this.order);
-        });
-    }
+    this.load(0);
   },
   methods: {
+    load(status) {
+      // console.log(status)
+      if (this.$store.getters.getIslogin) {
+        // 获取该用户的所有订单信息
+        this.axios
+          .get("/orders/order_list", { params: { status: status } })
+          .then(result => {
+            // console.log(result.data);
+            if (result.data.code == 200) {
+              var list = result.data.data;
+              // console.log(list);
+
+              //合计
+              /*for (var n = 0; n < list.length; n++) {
+              console.log(list[n]);
+              var money = list[n].price * list[n].count;
+              this.money= money;
+              console.log(money)
+            } */
+
+              var hash = {};
+              this.data = this.deteleObject(list, "order_id");
+              // console.log(this.data);
+              // var newAll = list;
+              // console.log(list);  [[],[],...]
+              for (var i = 0; i < this.data.length; i++) {
+                this.order[i] = [];
+                for (var j = 0; j < list.length; j++) {
+                  if (this.data[i].order_id == list[j].order_id) {
+                    this.order[i].push(list[j]);
+                    // console.log(this.order[i]);
+                  }
+                }
+              }
+            } else {
+              this.data = [];
+              this.order = [];
+            }
+            // console.log(this.order);
+          });
+      }
+    },
     deteleObject(arr, name) {
       var hash = {};
       return arr.reduce(function(item, next) {
@@ -123,7 +147,60 @@ export default {
         this.scrollToTime,
         ease[this.scrollToEasing]
       );
+    },
+    rollback() {
+      // console.log(this.$router.history.current.query.data);
+      if (this.$router.history.current.query.data == "fromClose") {
+        this.$router.go(-2);
+      } else {
+        this.$router.go(-1);
+      }
+    },
+    Delorder(data) {
+      this.$messagebox
+        .confirm("是否确认取消此订单")
+        .then(action => {
+          // 发送ajax请求
+          this.axios
+            .post("/orders/del_order", { order_id: data, status: 5 })
+            .then(result => {
+              // console.log(result.data);
+              if (result.data.code == 200) {
+                this.load(0);
+              }
+            });
+        })
+        .catch(err => {
+          return;
+        });
+    },
+    Summoney(i) {
+      let money = 0;
+      var list = this.order[i];
+      for (let i = 0; i < list.length; i++) {
+        money += list[i].count * list[i].price;
+      }
+      return "￥" + money;
+    },
+    isActive(n) {
+      this.load(n);
+      for (var i = 0; i < this.active.length; i++) {
+        if (i == n) {
+          this.active[i].isSelect = true;
+        } else {
+          this.active[i].isSelect = false;
+        }
+      }
     }
+  },
+  computed: {},
+  beforeRouteEnter(to, from, next) {
+    // 没有登录就跳到登录页面
+    next(vm => {
+      if (!vm.$store.getters.getIslogin) {
+        vm.$router.push("/Login");
+      }
+    });
   }
 };
 </script>
@@ -189,6 +266,7 @@ export default {
 .form-box .form-info {
   position: relative;
   height: 100px;
+  margin-bottom: 7px;
 }
 
 .form-box .form-info .pName {
@@ -196,15 +274,17 @@ export default {
   overflow: hidden;
   display: inline-block;
   font-size: 18px;
+  margin-left: 10px;
 }
 
 .form-box .form-info .state {
-  vertical-align: top;
+  top: 0.8rem;
+  position: absolute;
   overflow: hidden;
-  display: inline-block;
   word-wrap: break-word;
-  font-size: 15px;
+  font-size: 0.4rem;
   color: #7a7a7a;
+  left: 2.95rem;
 }
 
 .form-box .form-info .count {
@@ -228,11 +308,11 @@ export default {
   color: #333;
   padding: 18px 12px 25px 10px;
   font-size: 18px;
+  border-bottom: 1px solid #ccc;
 }
 
 .end .total {
   color: #ed143d;
-  font-weight: bolder;
 }
 
 .end .over {
@@ -266,18 +346,25 @@ export default {
       line-height: 36px;
       padding: 0 5px;
 
-      .nav-item {
+      .nav_item {
         font-size: 18px;
         display: inline-block;
         padding: 0 3px;
         margin: 0 5px;
 
         &:nth-child(1) {
-          color: #fa7b7a;
+          // color: #fa7b7a;
           border-bottom: 1px solid #ea5454;
         }
       }
     }
   }
+}
+
+.cancel {
+  float: right;
+  color: #333;
+  // padding: 0.48rem 0.32rem 0.666667rem 0.266667rem;
+  font-size: 0.48rem;
 }
 </style>

@@ -10,33 +10,34 @@
     <!-- <div></div> -->
     <div class="let-tabbar">
       <div class="left-panel">
-        <cube-scroll>
-          <cube-tab-bar
-            v-model="selectedLabel"
-            :data="Object.keys(left_list).map(label => ({label}))"
-            @change="changeHandler"
-          ></cube-tab-bar>
-        </cube-scroll>
+        <!-- <cube-scroll type="scroll-tab-view" title="ScrollTab"> -->
+        <cube-tab-bar
+          class="mycube_tab_bar"
+          v-model="selectedLabel"
+          :data="Object.keys(left_list).map(label => ({label}))"
+          @change="changeHandler"
+        ></cube-tab-bar>
+        <!-- </cube-scroll> -->
       </div>
     </div>
     <!-- 右边 -->
     <div class="right-panel">
-      <cube-scroll ref="scroll">
-        <ul v-if="!noClassify">
-          <li v-for="(elem,i) of right_list" :key="i">
-            <router-link :to="`/ProductList/${elem.cid}`" v-if="elem.series!='NULL'">
-              <img :src="`http://xiaoxuan.applinzi.com/${elem.pic}`" />
-              <span v-text="elem.series"></span>
-            </router-link>
-          </li>
-        </ul>
-        <img
-          v-if="noClassify"
-          style="width:100%;"
-          src="images/product/9949ccc6037a03283d42fbbcf505c33_03.png"
-          alt
-        />
-      </cube-scroll>
+      <!-- <cube-scroll ref="scroll"> -->
+      <ul v-if="!noClassify">
+        <li v-for="(elem,i) of right_list" :key="i">
+          <router-link :to="`/ProductList/${elem.cid}`" v-if="elem.series!='NULL'">
+            <img :src="`http://xiaoxuan.applinzi.com/${elem.pic}`" />
+            <span v-text="elem.series"></span>
+          </router-link>
+        </li>
+      </ul>
+      <img
+        v-if="noClassify"
+        style="width:100%;"
+        src="images/product/9949ccc6037a03283d42fbbcf505c33_03.png"
+        alt
+      />
+      <!-- </cube-scroll> -->
     </div>
   </div>
 </template>
@@ -95,33 +96,8 @@ export default {
       }
     }
   },
-  computed: {
-    // 显示搜索的内容
-    filterResult() {
-      return this.defaultResult.filter(value =>
-        new RegExp(this.value, "i").test(value)
-      );
-    }
-  },
-  watch: {
-    selectedLabel(newV) {
-      // console.log(newV);
-    }
-  },
-  beforeRouteEnter(to, from, next) {
-    console.log(to);
-    //判断是从哪个路由过来的，
-    if (from.name == "Details") {
-      // to.meta.isBack = false;
-      next(vm => {
-        // console.log(vm); //vm为vue的实例
-        // console.log("组件路由钩子beforeRouteEnter的next");
-        vm.active = "me";
-      });
-      return;
-    }
-    next();
-  }
+  computed: {},
+  watch: {}
 };
 </script>
 <style lang="stylus" rel="stylesheet/stylus">
@@ -146,21 +122,18 @@ export default {
 /* 左侧导航 */
 .let-tabbar {
   position: absolute;
-  top: 52px;
   left: 0;
-  bottom: 0;
+  top: 70px;
   width: 100px;
   background-color: #f9f9f9;
-  // margin-top: 36px;
-}
 
-.cube-scroll-list-wrapper {
-  .cube-tab-bar {
-    flex-wrap: wrap;
+  .mycube_tab_bar {
+    display: inline-block;
+    width: 100%;
 
     .cube-tab {
       width: 100%;
-      flex-basis: unset;
+      text-align: center;
       height: 40px;
       line-height: 40px;
       font-size: 14px;
@@ -185,16 +158,14 @@ export default {
   top: 52px;
   left: 100px;
   right: 0;
-  bottom: 0;
+  top: 70px;
   background-color: #f9f9f9;
 
-  // margin-top: 36px;
   ul {
-    position: fixed;
+    position: absolute;
     background-color: #fff;
     top: 0;
     left: 0;
-    width: 100%;
   }
 
   li {
